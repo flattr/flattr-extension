@@ -1,0 +1,43 @@
+
+flattr-options-beta
+{
+  display: block;
+  width: 460px;
+  margin: auto;
+  padding: 50px 0;
+  color: #797979;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+flattr-options-beta > h3
+{
+  font-size: 24px;
+}
+
+flattr-options-beta a
+{
+  color: #1AA3D4;
+  font-weight: 700;
+}
+
+flattr-options-beta
+{
+  text-align: center;
+}
+
+flattr-options-beta .consent
+{
+  font-weight: 600;
+}
+
+flattr-options-beta .footnotes
+{
+  font-size: 0.8em;
+}
+
+flattr-options-beta .footnotes > em
+{
+  display: block;
+}

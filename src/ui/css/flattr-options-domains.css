@@ -1,0 +1,31 @@
+
+flattr-options-domains > .domains
+{
+  box-sizing: border-box;
+  height: 150px;
+  border: 1px solid #e3e3e3;
+  border-radius: 13px;
+  padding: 10px 20px;
+  overflow: auto;
+}
+
+flattr-options-domains .domain
+{
+  box-sizing: border-box;
+  width: 100%;
+  padding: 5px 0;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+flattr-options-domains .url
+{
+  display: inline-block;
+  width: 90%;
+}
+
+flattr-options-domains .action
+{
+  display: inline-block;
+  width: 10%;
+  text-align: right;
+}

@@ -1,0 +1,79 @@
+@font-face
+{
+  font-family: "flattr-icons";
+  src: url("../fonts/flattr-icons.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+popup-beta
+{
+  display: block;
+  padding: 10px 15px;
+  font-size: 13px;
+  border: 1px solid #888;
+  border-radius: 3px;
+  transition-property: border-color, background-color;
+  transition-duration: 200ms;
+}
+
+popup-beta > h2
+{
+  display: flex;
+  margin: 0;
+  font-size: 1.1em;
+  cursor: pointer;
+}
+
+popup-beta > h2 > span
+{
+  flex-grow: 1;
+}
+
+popup-beta > h2 > button
+{
+  border: none;
+  font-weight: inherit;
+  color: inherit;
+  background: none;
+  cursor: inherit;
+  transition-property: color, transform;
+  transition-duration: 200ms;
+}
+
+popup-beta > h2 > button::after
+{
+  font-family: flattr-icons;
+  content: "\e60d"; /* icon-caret */
+}
+
+popup-beta > h2:hover > button
+{
+  color: #1AA3D4;;
+}
+
+popup-beta[collapsed]
+{
+  border-color: #F2F2F2;
+  background-color: #F2F2F2;
+}
+
+popup-beta:not([collapsed]) > h2 > button
+{
+  transform: scaleY(-1);
+}
+
+popup-beta[collapsed] > p
+{
+  display: none;
+}
+
+popup-beta > p:last-child
+{
+  margin-bottom: 0;
+}
+
+popup-beta a
+{
+  text-decoration: underline;
+}

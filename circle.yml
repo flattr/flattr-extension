@@ -1,0 +1,34 @@
+dependencies:
+  pre:
+    - nvm install
+  override:
+    - nvm use && npm install
+
+checkout:
+  post:
+    - "[ -f \"$(git rev-parse --git-dir)/shallow\" ] && git fetch --unshallow || true"
+
+test:
+  override:
+    - nvm use && npm test
+
+deployment:
+  development:
+    branch: master
+    owner: flattr
+    commands:
+      - nvm use && FP_BUILD_TARGET=chromium FP_BUILD_TYPE=development npm run upload
+      - nvm use && FP_BUILD_TARGET=gecko FP_BUILD_TYPE=development npm run upload
+      - nvm use && FP_BUILD_TARGET=chromium FP_BUILD_TYPE=usertesting npm run upload
+  staging:
+    branch: staging
+    owner: flattr
+    commands:
+      - nvm use && FP_BUILD_TARGET=chromium FP_BUILD_TYPE=staging npm run upload
+      - nvm use && FP_BUILD_TARGET=gecko FP_BUILD_TYPE=staging npm run upload
+  production:
+    branch: release
+    owner: flattr
+    commands:
+      - nvm use && FP_BUILD_TARGET=chromium FP_BUILD_TYPE=release npm run upload
+      - nvm use && FP_BUILD_TARGET=gecko FP_BUILD_TYPE=release npm run upload

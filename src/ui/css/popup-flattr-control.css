@@ -1,0 +1,330 @@
+flattr-control:not([hidden])
+{
+  display: block;
+  margin-bottom: 20px;
+}
+
+/* Message */
+
+.message
+{
+  margin-bottom: 20px;
+}
+
+.message.icon
+{
+  display: flex;
+}
+
+.message.icon::before
+{
+  margin-right: 5px;
+  font-size: 1em;
+}
+
+.message > :first-child
+{
+  margin-top: 0;
+}
+
+.message > :last-child
+{
+  margin-bottom: 0;
+}
+
+/* Button */
+
+.flattr-button
+{
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 25px;
+  height: 40px;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  background-color: #2F8C1C;
+  font-family: inherit;
+  font-size: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  white-space: nowrap;
+  z-index: 1;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  transition-property: margin-top, opacity;
+  transition-duration: 140ms;
+}
+
+flattr-control[disabled] .flattr-button
+{
+  margin-top: -60px; /* height + padding-top + padding-bottom */
+  opacity: 0;
+}
+
+/**
+ * Workaround to hide button anchor. Necessary due to overflow-x:visible being
+ * ineffective when used together with overflow-y:hidden.
+ */
+flattr-control[disabled] .anchor[name="flattr-button"]::before
+{
+  display: none;
+}
+
+.flattr-button[data-flattred]
+{
+  cursor: default;
+  animation: 1s highlight;
+}
+
+@keyframes highlight
+{
+  from
+  {
+    background-color: #00F706;
+  }
+}
+
+/* Texts */
+
+.flattr-button > [data-state]
+{
+  position: relative;
+  z-index: 1;
+  display: none;
+  width: 100%;
+  color: #FFF;
+  pointer-events: none;
+}
+
+.flattr-button > [data-state]::before
+{
+  position: relative;
+  top: 1px;
+  margin-right: 10px;
+  font-family: flattr-icons;
+  content: "\e609"; /* icon-flattr-alt */
+}
+
+.flattr-button[data-flattred] [data-state="flattred"],
+.flattr-button:not([data-flattred]):hover [data-state="default-hover"],
+.flattr-button:not([data-flattred]):not(:hover) [data-state="default"]
+{
+  display: block;
+}
+
+/* Attention level */
+
+.flattr-attention
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: #38B838;
+  pointer-events: none;
+  transition: width 140ms linear;
+}
+
+.flattr-button:not([data-flattred]):hover > .flattr-attention
+{
+  width: 100% !important;
+}
+
+.flattr-button[data-flattred] > .flattr-attention
+{
+  width: 0% !important;
+  transition: none;
+}
+
+/* List */
+
+.flattr-list
+{
+  padding-bottom: 20px;
+  border-bottom: 1px solid #B2B2B2;
+  transition-property: margin-top, opacity, padding;
+  transition-duration: 200ms;
+}
+
+flattr-control[disabled] .flattr-list,
+flattr-control:not([flattred]) .flattr-list
+{
+  margin-top: -40px; /* height + flattr-button.margin-bottom */
+  padding: 0px;
+  opacity: 0;
+}
+
+.flattr-count,
+.flattr-url-count
+{
+  display: inline-block;
+  width: 30px;
+  text-align: center;
+}
+
+.flattr-count,
+.flattr-url-count
+{
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.flattr-count
+{
+  height: 30px;
+  margin-right: 5px;
+  border-radius: 20px;
+  line-height: 30px;
+  color: #FFF;
+  background-color: #777;
+}
+
+.flattr-collapse
+{
+  display: inline-block;
+  padding: 0px;
+  margin-left: 10px;
+  border: none;
+  font-weight: 700;
+  color: #666;
+  background: none;
+  cursor: pointer;
+  transition-property: color, transform;
+  transition-duration: 200ms;
+}
+
+.flattr-collapse:hover
+{
+  color: #000;
+}
+
+.flattr-list:not(.collapsed) .flattr-collapse
+{
+  transform: scaleY(-1);
+}
+
+.flattr-collapse::before
+{
+  font-family: flattr-icons;
+  content: "\e60d"; /* icon-caret */
+}
+
+.flattr-list a
+{
+  margin-top: 12px;
+  font-size: 12px;
+  color: #666;
+}
+
+.flattr-list strong
+{
+  color: #777;
+}
+
+.flattr-list .url-title
+{
+  width: calc(100% - 36px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.flattr-list .flattr-url-count
+{
+  height: 26px;
+  line-height: 26px;
+  color: #777;
+}
+
+.flattr-list > ul
+{
+  max-height: 200px;
+  width: 100%;
+  font-size: 12px;
+  color: #666;
+  overflow: auto;
+}
+
+.flattr-list > ul > li
+{
+  position: relative;
+  margin: 8px 0px;
+  padding: 0px;
+  border-radius: 4px;
+  background-color: #F7F7F7;
+  transition: margin-top 200ms;
+}
+
+.flattr-list.collapsed > ul > li
+{
+  margin-top: -34px; /* height + margin-top */
+}
+
+.flattr-list > a
+{
+  display: block;
+  transition-property: margin, max-height, opacity;
+  transition-duration: 200ms;
+}
+
+.flattr-list.collapsed > a
+{
+  max-height: 0px;
+  margin: 0px;
+  opacity: 0;
+}
+
+.flattr-list > ul > li::before
+{
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 14px;
+  width: 2px;
+  height: 8px;
+  background-color: #B2B2B2;
+}
+
+.flattr-list > ul > li > *
+{
+  vertical-align: middle;
+}
+
+/* Enable/Disable Toggle */
+
+.flattr-enable
+{
+  display: block;
+  margin: 20px 0;
+}
+
+.flattr-enable > label
+{
+  display: inline-block;
+  width: calc(100% - 40px);
+  vertical-align: top;
+}
+
+flattr-control[disabled] .flattr-enable > label
+{
+  color: #666;
+}
+
+.flattr-enable > label > strong
+{
+  word-wrap: break-word;
+}
+
+.flattr-enable > label > em
+{
+  display: block;
+  font-style: normal;
+  font-size: 0.8em;
+  color: #666;
+}

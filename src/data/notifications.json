@@ -1,0 +1,38 @@
+{
+  "disabled-first": {
+    "anchor": "flattr-enable",
+    "description": "notification_disabledFirst_description",
+    "title": "notification_disabledFirst_title",
+    "type": "tutorial"
+  },
+  "disabled-some-revisited": {
+    "anchor": "flattr-enable",
+    "description": "notification_disabledSomeRevisited_description",
+    "title": "notification_disabledSomeRevisited_title",
+    "type": "info"
+  },
+  "flattr-first": {
+    "anchor": "flattr-button",
+    "description": "notification_flattrFirst_description",
+    "title": "notification_flattrFirst_title",
+    "type": "tutorial"
+  },
+  "flattr-first-author": {
+    "anchor": "flattr-button",
+    "description": "notification_flattrFirstAuthor_description",
+    "title": "notification_flattrFirstAuthor_title",
+    "type": "tutorial"
+  },
+  "flattr-first-revisited": {
+    "anchor": "flattr-button",
+    "description": "notification_flattrFirstRevisited_description",
+    "title": "notification_flattrFirstRevisited_title",
+    "type": "tutorial"
+  },
+  "flattr-some": {
+    "anchor": "dashboard",
+    "description": "notification_flattrSome_description",
+    "title": "notification_flattrSome_title",
+    "type": "info"
+  }
+}

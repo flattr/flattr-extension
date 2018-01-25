@@ -1,0 +1,302 @@
+flattr-options-review
+{
+  margin-bottom: 250px;
+}
+
+flattr-options-review .controls > div
+{
+  display: table;
+  width: 100%;
+  text-align: center;
+}
+
+flattr-options-review .controls > div > div
+{
+  display: table-cell;
+  padding: 15px;
+  border: 5px solid white;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+flattr-options-review .controls > .top > div
+{
+  background-color: #f9f9f9;
+  border-radius: 12px;
+}
+
+flattr-options-review .controls > .top > div > span
+{
+  font-size: 11px;
+  color: #797979;
+  text-align: right;
+  text-transform: uppercase;
+  padding-right: 5px;
+  vertical-align: middle;
+  font-weight: 400;
+}
+
+flattr-options-review .controls > .top > .budget
+{
+  color: #252021;
+  font-weight: 700;
+}
+
+flattr-options-review .controls > .top > .flattrs
+{
+  color: #38B838;
+  font-weight: 700;
+}
+
+flattr-options-review .controls
+{
+  font-size: 24px;
+}
+
+flattr-options-review .controls > .bottom > div
+{
+  width: 33%;
+}
+
+flattr-options-review .controls > .bottom > .search
+{
+  width: 100%;
+  text-align: center;
+}
+
+flattr-options-review .search > input
+{
+  font-size: 16px;
+  font-family: "Helvetica Neue", "Source Sans Pro", sans-serif;
+  width: 350px;
+  left: 0;
+  padding: 10px;
+  display: block;
+  border: #e8e8e8 1px solid;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+}
+
+flattr-options-review .controls > .bottom > .toggle
+{
+  padding-right: 0;
+}
+
+flattr-options-review .toggle > div
+{
+  display: table;
+  width: 180px;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+  border: #e8e8e8 1px solid;
+  border-radius: 10px;
+}
+
+flattr-options-review .toggle > div:hover
+{
+  background-color: #e5e5e5;
+}
+
+flattr-options-review .toggle > div:hover > div
+{
+  color: #797979;
+}
+
+flattr-options-review .toggle > div > div
+{
+  display: table-cell;
+  font-size: 16px;
+  color: #e8e8e8;
+  padding: 10px;
+  box-sizing: border-box;
+  width: 50%;
+  cursor: pointer;
+}
+
+flattr-options-review .toggle > div > .active
+{
+  border: #e8e8e8 1px solid;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #000;
+  cursor: auto;
+}
+
+flattr-options-review .output
+{
+  border-bottom: 2px solid #EAEAEA;
+}
+
+flattr-options-review .stats
+{
+  color: #000;
+}
+
+flattr-options-review .day,
+flattr-options-review .domain
+{
+  display: block;
+  clear: both;
+}
+
+flattr-options-review .day > .daytitle
+{
+  text-transform: uppercase;
+  background-color: #797979;
+  color: #fff;
+}
+
+flattr-options-review .domain.active > .domaintitle
+{
+  background-color: #000;
+  color: #fff;
+}
+
+flattr-options-review .domain > .domaintitle
+{
+  background-color: #f9f9f9;
+  color: #000;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+flattr-options-review .domain:nth-child(even) > .domaintitle
+{
+  background-color: #fff;
+}
+
+flattr-options-review .domain.active:nth-child(even) > .domaintitle
+{
+  background-color: #000;
+}
+
+flattr-options-review .domain > .daytitle
+{
+  display: none;
+}
+
+flattr-options-review .domain.active > .daytitle
+{
+  display: block;
+}
+
+flattr-options-review .domaintitle:hover
+{
+  color: #1AA3D4;
+  background-color: #F0F0F0;
+}
+
+flattr-options-review .domain.active > .daytitle:nth-child(even) > .col
+{
+  background-color: #f9f9f9;
+}
+
+flattr-options-review .domain > .domaintitle > .col1
+{
+  font-weight: 400;
+}
+
+flattr-options-review .domain > .domaintitle .pages
+{
+  padding-left: 5px;
+  color: #797979;
+  font-weight: 400;
+}
+
+flattr-options-review .domain > div > .col2
+{
+  color: #797979;
+}
+
+flattr-options-review .domain > div > .col3
+{
+  color: #000;
+  font-weight: 700;
+}
+
+flattr-options-review .domain.active
+{
+  border-bottom: 2px dashed #EAEAEA;
+}
+
+flattr-options-review .domain.active > .domaintitle > .col3
+{
+  color: #fff;
+  font-weight: 700;
+}
+
+flattr-options-review .domain > div > .col4
+{
+  color: #38B838;
+  font-weight: 700;
+}
+
+flattr-options-review .day > div > div,
+flattr-options-review .domain > div > div
+{
+  display: table-cell;
+  padding: 10px;
+}
+
+flattr-options-review .domain > div > .col0
+{
+  width: 25px;
+  vertical-align: top;
+}
+
+flattr-options-review .domain > div > .col0 > .subitem
+{
+  display: block;
+  width: 7px;
+  height: 10px;
+  float: right;
+  position: relative;
+  top: 3;
+  right: 0;
+  box-sizing: border-box;
+  border-left: 1px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 0;
+}
+
+flattr-options-review .day > div > .col0,
+flattr-options-review .domain > div > .col1
+{
+  width: 100%;
+}
+
+flattr-options-review .day > div > .col.small,
+flattr-options-review .domain > div > .col.small
+{
+  width: 50px;
+  white-space: nowrap;
+}
+
+flattr-options-review .day > div > .col2,
+flattr-options-review .day > div > .col3
+{
+  font-weight: 700;
+}
+
+flattr-options-review .day > .daytitle > .col0
+{
+  color: #fff;
+  font-weight: 700;
+}
+
+flattr-options-review .day > .page > .col0,
+flattr-options-review .day > .page > .col2
+{
+  color: #000;
+}
+
+flattr-options-review .day > .page > .col3
+{
+  color: #38B838;
+}
+
+flattr-options-review .pagetitle
+{
+  color: #797979;
+}

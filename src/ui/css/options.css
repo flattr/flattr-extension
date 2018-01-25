@@ -1,0 +1,160 @@
+body
+{
+  margin: 0 0 200px 0;
+  background-color: #fff;
+}
+
+header
+{
+  box-sizing: border-box;
+  height: 100px;
+  margin-bottom: 10px;
+  padding-top: 25px;
+  background-color: #eee;
+  font-size: 30px;
+  color: #555;
+  text-align: center;
+  vertical-align: middle;
+}
+
+header::before
+{
+  position: relative;
+  top: 1px;
+  margin-right: 8px;
+  font-family: flattr-icons;
+  content: "\e609"; /* icon-flattr-alt */
+}
+
+nav, section
+{
+  width: 900px;
+}
+
+nav
+{
+  border-bottom: 1px solid #bbb;
+  margin: 0 auto 25px auto;
+  font-size: 15px;
+}
+
+nav > ul
+{
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+nav > ul > li
+{
+  display: inline-block;
+  padding: 8px 25px;
+  margin-top: 15px;
+  margin-right: 5px;
+  margin-bottom: -1px;
+}
+
+nav > ul > li.selected
+{
+  border-top: 1px solid #bbb;
+  border-left: 1px solid #bbb;
+  border-right: 1px solid #bbb;
+  border-bottom: 1px solid #fff;
+  border-radius: 4px 4px 0 0;
+}
+
+nav > ul > li:before
+{
+  position: relative;
+  top: 1px;
+  margin-right: 3px;
+}
+
+nav > ul > .review-item:before
+{
+  font-family: flattr-icons;
+  content: "\e601"; /* icon-list */
+}
+
+nav > ul > .history-item:before
+{
+  font-family: simple-line-icons;
+  content: "\e081"; /* clock */
+}
+
+nav > ul > .domains-item:before
+{
+  font-family: simple-line-icons;
+  content: "\e07c"; /* ban */
+}
+
+nav > ul > .beta-item:before
+{
+  font-family: simple-line-icons;
+  content: "\e02d"; /* puzzle */
+}
+
+a
+{
+  color: #737373;
+  text-decoration: none;
+}
+
+section
+{
+  box-sizing: border-box;
+  display: none;
+  margin: 0 auto;
+}
+
+section.selected
+{
+  display: block;
+}
+
+.message
+{
+  display: block;
+  width: 220px;
+  margin: 20px auto;
+}
+
+#beta-tab
+{
+  border: 1px solid #eee;
+  padding: 20px;
+  background-color: #F9F9F9;
+}
+
+#beta-tab input-toggle
+{
+  display: block;
+  margin-bottom: 10px;
+}
+
+section > info
+{
+  box-sizing: border-box;
+  width: 100%;
+  background-color: #e2e2e2;
+  display: block;
+  padding: 15px;
+}
+
+button
+{
+  display: block;
+  box-sizing: border-box;
+  background-color: #56cd42;
+  border-radius: 25px;
+  margin: 25px auto;
+  width: 235px;
+  padding: 10px;
+  border: 0;
+  outline: 0;
+  color: #fff;
+  font-family: -apple-system, "Helvetica Neue", "Source Sans Pro", sans-serif;
+  font-family: Segoe UI, Arial, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}

@@ -1,0 +1,15 @@
+.DS_Store
+*.xpi
+*.zip
+*.pem
+bin/
+devenv/
+node_modules/
+npm-debug.log
+private/
+D_*
+__sysdb__.sqlite
+yarn.lock
+package-lock.json
+.editorconfig
+

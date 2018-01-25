@@ -1,0 +1,318 @@
+{
+  "name":
+  {
+    "message": "Flattr"
+  },
+  "name_development":
+  {
+    "message": "Flattr (development)"
+  },
+  "name_staging":
+  {
+    "message": "Flattr (staging)"
+  },
+  "name_usertesting":
+  {
+    "message": "Flattr (usertesting)"
+  },
+  "description":
+  {
+    "message": "Make automatic micropayments on the web with Flattr."
+  },
+  "settingsHeader":
+  {
+    "message": "Flattr"
+  },
+  "reviewHeader":
+  {
+    "message": "Review"
+  },
+  "popup_beta_auto_description_disabled":
+  {
+    "message": "Help improve Flattr by sending us some anonymized data."
+  },
+  "popup_beta_auto_description_enabled":
+  {
+    "message": "You've agreed to send some anonymized data to Flattr."
+  },
+  "popup_beta_auto_link":
+  {
+    "message": "Read more here"
+  },
+  "popup_beta_auto_title_disabled":
+  {
+    "message": "Make Flattr even better"
+  },
+  "popup_beta_auto_title_enabled":
+  {
+    "message": "Sending data to Flattr"
+  },
+  "popup_beta_manual_description":
+  {
+    "message": "Want to help even more?"
+  },
+  "popup_beta_manual_link":
+  {
+    "message": "Leave feedback"
+  },
+  "flattrAuth_action":
+  {
+    "message": "Sign in"
+  },
+  "flattrAuth_link_after":
+  {
+    "message": " to create one."
+  },
+  "flattrAuth_link_before":
+  {
+    "message": "Don't have an account? Visit "
+  },
+  "flattrAuth_message":
+  {
+    "message": "Oops! It looks like you've signed out of your Flattr account. Please sign in to continue flattring your favorite online content."
+  },
+  "flattrAuth_title":
+  {
+    "message": "Sign in"
+  },
+  "popup_flattrButton_default":
+  {
+    "message": "Flattr"
+  },
+  "popup_flattrButton_defaultHover":
+  {
+    "message": "Flattr now"
+  },
+  "popup_flattrButton_flattred":
+  {
+    "message": "Flattred!"
+  },
+  "popup_flattrList_title_singular":
+  {
+    "message": "<strong>Flattr today</strong> on this site"
+  },
+  "popup_flattrList_title_plural":
+  {
+    "message": "<strong>Flattrs today</strong> on this site"
+  },
+  "popup_flattrEnable_author":
+  {
+    "message": "Flattrs go to creators"
+  },
+  "popup_flattrEnable_disabled":
+  {
+    "message": "Flattr disabled for this site"
+  },
+  "popup_flattrEnable_enabled":
+  {
+    "message": "Flattr enabled for this site"
+  },
+  "popup_flattrEnable_label":
+  {
+    "message": "Flattr <strong>$domain$</strong>",
+    "placeholders":
+    {
+      "domain":
+      {
+        "content": "$1"
+      }
+    }
+  },
+  "popup_footer_account":
+  {
+    "message": "Flattr dashboard"
+  },
+  "popup_message_blocked":
+  {
+    "message": "This website cannot be flattred"
+  },
+  "popup_message_blocked_url":
+  {
+    "message": "This particular page cannot be flattred. Other pages on this site can be flattred."
+  },
+  "popup_message_error":
+  {
+    "message": "This page cannot be flattred"
+  },
+  "options_beta_description":
+  {
+    "message": "By clicking the button below, you hereby declare that some anonymized (except for multiauthor domains) extension data (as specified <a>here</a>) will be transferred to us and processed for the purpose of improving the extension and the underlying algorithm. We do not combine the collected data with any other information about you. The data we collect is statistical data, therefore we do not know who generated it."
+  },
+  "options_beta_export_download":
+  {
+    "message": "Download"
+  },
+  "options_beta_export_footnote":
+  {
+    "message": "Data that is manually exported is not anonymized."
+  },
+  "options_beta_export_loading":
+  {
+    "message": "Exporting data..."
+  },
+  "options_beta_export_start":
+  {
+    "message": "Export data"
+  },
+  "options_beta_feedback_toggle":
+  {
+    "message": "Send anonymized data to $flattr$",
+    "placeholders":
+    {
+      "flattr":
+      {
+        "content": "$1",
+        "example": "flattr.com"
+      }
+    }
+  },
+  "options_beta_intro":
+  {
+    "message": "Your participation helps us, among other things, identify and fix issues, and evaluate the overall user experience."
+  },
+  "options_beta_optin":
+  {
+    "message": "To opt in, click the button below:"
+  },
+  "options_beta_revocation":
+  {
+    "message": "You can revoke your consent at any time by visiting this page and clicking the button below."
+  },
+  "options_beta_tab":
+  {
+    "message": "Beta Settings"
+  },
+  "options_beta_title":
+  {
+    "message": "Your help is invaluable!"
+  },
+  "options_domains_info_title":
+  {
+    "message": "Enabled and disabled domains"
+  },
+  "options_domains_disabled_title":
+  {
+    "message": "Domains you disabled"
+  },
+  "options_domains_enabled_title":
+  {
+    "message": "Domains you enabled"
+  },
+  "options_review_budget_label":
+  {
+    "message": "Your fictional budget"
+  },
+  "options_review_date_today":
+  {
+    "message": "today"
+  },
+  "options_review_date_total":
+  {
+    "message": "daily total"
+  },
+  "options_review_date_yesterday":
+  {
+    "message": "yesterday"
+  },
+  "options_review_domain":
+  {
+    "message": "<strong>$domain$</strong> ($pages$ pages)",
+    "placeholders":
+    {
+      "domain":
+      {
+        "content": "$1"
+      },
+      "pages":
+      {
+        "content": "$2"
+      }
+    }
+  },
+  "options_review_flattrs_label":
+  {
+    "message": "Flattrs"
+  },
+  "options_review_search_placeholder":
+  {
+    "message": "Search..."
+  },
+  "options_review_title":
+  {
+    "message": "<strong>$domains$ domains</strong> ($pages$ pages)",
+    "placeholders":
+    {
+      "domains":
+      {
+        "content": "$1"
+      },
+      "pages":
+      {
+        "content": "$2"
+      }
+    }
+  },
+  "options_review_unassigned":
+  {
+    "message": "(not assigned yet)"
+  },
+  "options_review_view_flattrs":
+  {
+    "message": "Most Flattrs"
+  },
+  "options_review_view_recent":
+  {
+    "message": "Most Recent"
+  },
+  "notification_disabledFirst_description": {
+    "message": "By default, Flattr is not switched on for this site. This means that this site will not earn flattrs.<br>Want to flattr this site? Simply click the toggle to enable Flattr for this site."
+  },
+  "notification_disabledFirst_title": {
+    "message": "This site will not be flattred."
+  },
+  "notification_disabledSomeRevisited_description": {
+    "message": "You seem to visit this site often. It could be earning flattrs, but Flattr is disabled.<br>You can click the toggle at any time to enable Flattr on this site."
+  },
+  "notification_disabledSomeRevisited_title": {
+    "message": "Would you like to flattr this site?"
+  },
+  "notification_dismiss":
+  {
+    "message": "Got it!"
+  },
+  "notification_flattrFirst_description":
+  {
+    "message": "Your Flattr button fills up automatically as you browse a site. When full, a flattr is given!<br>Don't want to wait? Simply click the Flattr button whenever you'd like to give another flattr!"
+  },
+  "notification_flattrFirst_title":
+  {
+    "message": "Awesome! You just flattred a site!"
+  },
+  "notification_flattrFirstAuthor_description": {
+    "message": "On sites with <strong>many</strong> contributors (like this one), only the individual creators earn Flattrs.<br>The site itself does not earn flattrs."
+  },
+  "notification_flattrFirstAuthor_title": {
+    "message": "Nice! You just flattred a content creator!"
+  },
+  "notification_flattrFirstRevisited_description": {
+    "message": "This site earned a flattr because you've visited this site several times this month.<br>From now on, this site will be automatically flattred when you visit it, even if you don't manually flattr any content."
+  },
+  "notification_flattrFirstRevisited_title": {
+    "message": "Do you come here often?"
+  },
+  "notification_flattrSome_description": {
+    "message": "To see which sites have earned flattrs since you started, click the Flattr Dashboard button.<br>It's really that simple."
+  },
+  "notification_flattrSome_title": {
+    "message": "You've made 20 flattrs! Great work!"
+  },
+  "flattr_subscription_action": {
+    "message": "Choose subscription"
+  },
+  "flattr_subscription_message": {
+    "message": "Please choose and activate your subscription to flattr creators."
+  },
+  "flattr_subscription_title": {
+    "message": "No subscription active"
+  }
+}

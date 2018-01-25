@@ -1,0 +1,56 @@
+@font-face
+{
+  font-family: "flattr-icons";
+  src: url("../fonts/flattr-icons.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face
+{
+  font-family: "simple-line-icons";
+  src: url("../fonts/Simple-Line-Icons.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+body
+{
+  color: #555;
+  font-family: -apple-system, "Helvetica Neue", "Source Sans Pro", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+a.button.primary
+{
+  display: block;
+  padding: 10px;
+  border: 0;
+  border-radius: 25px;
+  outline: 0;
+  font-weight: 600;
+  color: #FFF;
+  background-color: #3ACC58;
+  cursor: pointer;
+  transition: background-color 300ms;
+  text-align: center;
+}
+
+a.button.primary:hover
+{
+  text-decoration: none;
+  background-color: #5DD575;
+}
+
+.message
+{
+  text-align: left;
+}
+
+.message > h3
+{
+  text-align: center;
+}

@@ -1,0 +1,16 @@
+{
+  "extends": "eslint-config-eyeo",
+  "root": true,
+  "rules": {
+    "no-labels": "off",
+    "dot-location": ["error", "property"],
+    "max-depth": ["error", 4],
+    "max-statements": ["error", 64],
+    "no-extend-native": "error",
+    "no-sequences": "error",
+    "no-unused-expressions": "error",
+    "no-use-before-define": ["error", {"functions": false}],
+    "quotes": ["error", "double"],
+    "space-before-blocks": ["error", "always"]
+  }
+}

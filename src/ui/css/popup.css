@@ -1,0 +1,231 @@
+body
+{
+  margin: 0px;
+  background-color: #F2F2F2;
+}
+
+header
+{
+  position: relative;
+  z-index: 2; /* needs to be larger than z-index of Flattr button (see #817) */
+  padding: 20px;
+}
+
+h1
+{
+  margin: 0;
+  text-align: center;
+  font-weight: 400;
+  font-size: 22px;
+  color: #000;
+}
+
+h1::before
+{
+  margin-right: 10px;
+  font-family: flattr-icons;
+  content: "\e609"; /* icon-flattr-alt */
+}
+
+a:link,
+a:visited
+{
+  color: #1AA3D4;
+  text-decoration: none;
+}
+
+a:link:hover,
+a:visited:hover
+{
+  text-decoration: underline;
+}
+
+a:link:focus,
+a:visited:focus,
+button:focus
+{
+  outline: none;
+}
+
+button
+{
+  color: inherit;
+}
+
+ul
+{
+  margin: 0;
+  padding: 0;
+}
+
+span
+{
+  display: inline-block;
+}
+
+li > div
+{
+  padding: 0px;
+}
+
+.icon::before
+{
+  display: inline-block;
+  font-family: simple-line-icons;
+  font-size: 1.2em;
+}
+
+.icon.icon-ban::before
+{
+  content: "\e07c";
+}
+
+.icon.icon-flattr-alt::before
+{
+  font-family: flattr-icons;
+  content: "\e609";
+}
+
+flattr-popup
+{
+  display: flex;
+}
+
+main
+{
+  width: 260px;
+}
+
+aside
+{
+  box-sizing: border-box;
+  width: 220px;
+  height: 100%;
+  padding: 20px 15px;
+  border-right: 1px solid #BBB;
+}
+
+aside h2
+{
+  display: flex;
+  margin-top: 0;
+  font-size: 16px;
+}
+
+aside h2::before
+{
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 20px;
+  color: #FFF;
+  background-position: center center;
+  background-repeat: no-repeat;
+  content: "";
+}
+
+aside[data-type="tutorial"] h2::before
+{
+  border-radius: 15px;
+  background-image: url(../../icons/star-20x20-sub.png);
+  background-color: #3D992E;
+  background-position: center 4px;
+}
+
+aside[data-type="info"] h2::before
+{
+  background-color: #089ECD;
+  content: "?";
+}
+
+aside button
+{
+  padding: 7px 14px;
+  border: 1px solid #089ECD;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #089ECD;
+  background-color: #FFF;
+  cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 140ms;
+}
+
+aside button:hover
+{
+  color: #FFF;
+  background-color: #089ECD;
+}
+
+.content
+{
+  padding: 20px;
+  background-color: #FFF;
+}
+
+footer li
+{
+  display: block;
+  white-space: nowrap;
+}
+
+footer li:not(:last-child)
+{
+  border-bottom: 1px solid #E1E1E1;
+}
+
+footer .icon::before
+{
+  margin-right: 15px;
+}
+
+footer a:link,
+footer a:visited
+{
+  display: block;
+  padding: 10px 20px;
+  color: #000;
+  transition: background-color 100ms;
+}
+
+footer a:link:hover,
+footer a:visited:hover
+{
+  text-decoration: none;
+  background-color: #EDEDED;
+}
+
+/* Not authenticated */
+
+flattr-popup:not([authenticated])
+{
+  text-align: center;
+}
+
+flattr-popup:not([authenticated]) footer li
+{
+  padding: 20px;
+}
+
+/* Anchors */
+
+.anchor
+{
+  display: block;
+  position: relative;
+}
+
+.anchor::before
+{
+  display: none;
+  position: absolute;
+  top: calc(50% - 17px);
+  left: -35px;
+  font-size: 34px;
+  line-height: 34px;
+  overflow: hidden;
+  content: "\279C";
+}

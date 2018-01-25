@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title data-i18n="settingsHeader"></title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" href="css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="css/flattr-options-beta.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="css/flattr-options-review.css"/>
+    <link rel="stylesheet" type="text/css" href="css/input-toggle.css"/>
+    <link rel="stylesheet" type="text/css" href="css/options.css"/>
+    <script src="js/webcomponents-lite.js" defer></script>
+    <script src="../lib/ui/options/index.js" defer></script>
+  </head>
+  <body>
+    <header data-i18n="settingsHeader"></header>
+
+    <flattr-options-message class="message"></flattr-options-message>
+
+    <nav id="options" hidden>
+      <ul>
+        <li class="beta-item selected">
+          <a data-i18n="options_beta_tab" href="#beta"></a>
+        </li>
+        <li class="review-item">
+          <a data-i18n="reviewHeader" href="#review"></a>
+        </li>
+      </ul>
+    </nav>
+
+    <section id="beta-tab">
+      <flattr-options-beta></flattr-options-beta>
+    </section>
+
+    <section id="review-tab">
+      <flattr-options-review></flattr-options-review>
+    </section>
+
+  </body>
+</html>

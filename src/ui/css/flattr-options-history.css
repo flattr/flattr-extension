@@ -1,0 +1,39 @@
+
+flattr-options-history > div
+{
+  width: 100%;
+}
+
+flattr-options-history a
+{
+  color: #428bca;
+}
+
+flattr-options-history .row
+{
+  border-bottom: 1px solid #bbb;
+}
+
+flattr-options-history .col
+{
+  display: table-cell;
+  padding: 10px;
+}
+
+flattr-options-history .footer
+{
+  width: 100%;
+  padding: 50px 10px 0 10px;
+  box-sizing: border-box;
+}
+
+flattr-options-history .col0
+{
+  width: 100%;
+}
+
+flattr-options-history .col1
+{
+  white-space: nowrap;
+}
+
