@@ -79,8 +79,10 @@ describe("Test background page data collection", () =>
         2,
         "state",
         {
+          audible: false,
           incognito: false,
           index: 1,
+          muted: true,
           selected: false,
           title: "BAR",
           url: "http://bar.com/",
@@ -173,6 +175,15 @@ describe("Test background page data collection", () =>
 
     expecting.push([2, "url", "http://baz.com/"]);
     chrome.tabs.onUpdated.trigger(2, {url: "http://baz.com"});
+
+    expecting.push([2, "title", "foo"]);
+    chrome.tabs.onUpdated.trigger(2, {title: "foo"});
+
+    expecting.push([2, "audible", true]);
+    chrome.tabs.onUpdated.trigger(2, {audible: true});
+
+    expecting.push([2, "muted", true]);
+    chrome.tabs.onUpdated.trigger(2, {mutedInfo: {muted: true}});
 
     expecting.push([1, "removed", null]);
     chrome.tabs.onRemoved.trigger(1, null);
