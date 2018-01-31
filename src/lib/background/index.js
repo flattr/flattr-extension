@@ -67,8 +67,10 @@ function refreshTabStates(onEach)
       }
 
       record(tab.id, "state", {
+        audible: tab.audible,
         incognito: tab.incognito,
         index: tab.index,
+        muted: !!tab.mutedInfo && tab.mutedInfo.muted,
         selected: tab.active,
         title: tab.title,
         url,
@@ -129,6 +131,16 @@ function onTabCreated(tab)
 
 function onTabUpdated(tabId, info)
 {
+  if ("audible" in info)
+  {
+    record(tabId, "audible", info.audible);
+  }
+
+  if ("mutedInfo" in info)
+  {
+    record(tabId, "muted", info.mutedInfo.muted);
+  }
+
   if ("url" in info)
   {
     let url;
