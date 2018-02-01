@@ -1,6 +1,7 @@
 "use strict";
 
 const {on} = require("../../common/events");
+const audio = require("./audio");
 const attention = require("./attention");
 const storage = require("./storage");
 
@@ -8,6 +9,10 @@ on("data", ({tabId, action, data}) =>
 {
   switch (action)
   {
+    case "audible":
+    case "muted":
+      audio.update(tabId, action, data);
+      break;
     case "idle":
       switch (data)
       {
@@ -28,6 +33,7 @@ on("data", ({tabId, action, data}) =>
 
       // fall through
     case "removed":
+      audio.reset();
       return attention.stop(tabId).then(() => storage.removePage(tabId));
     case "selected":
       attention.select(tabId);
@@ -44,6 +50,7 @@ on("data", ({tabId, action, data}) =>
     case "title":
       return storage.updatePage(tabId, {title: data});
     case "url":
+      audio.reset(tabId);
       return storage.updatePage(tabId, {url: data});
     case "keypressed":
     case "pointerclicked":

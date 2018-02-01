@@ -36,7 +36,7 @@ function stopAttention(tabId, shouldResumeAfter)
   }
 
   let attention = (now - started) / 1000;
-  return storage.addAttention(tabId, url, attention, false);
+  return storage.addAttention(tabId, url, attention, null);
 }
 
 exports.stop = (tabId) => stopAttention(tabId);

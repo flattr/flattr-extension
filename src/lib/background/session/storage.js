@@ -10,9 +10,14 @@ const {getRemainingAttention} = require("./thresholds");
 const {db} = require("../database/session");
 const tabPages = require("../tabPages");
 
-function addAttention(tabId, url, addedAttention, isManual)
+function addAttention(tabId, url, addedAttention, type)
 {
   if (addedAttention == 0)
+    return Promise.resolve();
+
+  // Ignore generic attention while the tab is playing audio
+  let tabPage = tabPages.get(tabId);
+  if (tabPage && tabPage.isAudio && !type)
     return Promise.resolve();
 
   // We cannot put getStatus() inside the transaction scope
@@ -26,7 +31,7 @@ function addAttention(tabId, url, addedAttention, isManual)
       return;
 
     let entity = getEntity(url);
-    let property = (isManual) ? "manualAttention" : "attention";
+    let property = (type == "manual") ? "manualAttention" : "attention";
 
     return new Dexie.Promise((resolve, reject) =>
     {
@@ -37,7 +42,7 @@ function addAttention(tabId, url, addedAttention, isManual)
         page[property] += addedAttention;
         yield db.pages.update(page.url, {[property]: page[property]});
 
-        if (addedAttention >= getRemainingAttention(entity, oldAttention))
+        if (addedAttention >= getRemainingAttention(url, oldAttention))
         {
           yield flattrManager.submit({
             entity, tabId, url,
@@ -51,11 +56,11 @@ function addAttention(tabId, url, addedAttention, isManual)
     })
     .then((attention) =>
     {
-      let tabPage = tabPages.get(tabId);
+      tabPage = tabPages.get(tabId);
       if (tabPage && tabPage.url == url)
       {
         tabPage.attention = attention;
-        emit("attentionlevel-changed", {attention, entity});
+        emit("attentionlevel-changed", {attention, url});
       }
 
       return attention;
@@ -73,9 +78,9 @@ function fastForward(tabId)
     return;
   }
 
-  let {attention, entity, url} = tabPage;
-  attention = getRemainingAttention(entity, attention);
-  return addAttention(tabId, url, attention, true);
+  let {attention, url} = tabPage;
+  attention = getRemainingAttention(url, attention);
+  return addAttention(tabId, url, attention, "manual");
 }
 exports.fastForward = fastForward;
 
@@ -148,25 +153,54 @@ exports.removePage = removePage;
  * Update one or more tab page properties
  * @param {number} tabId
  * @param {Object} tabUpdate
- * @param {string} tabUpdate.title
- * @param {string} tabUpdate.url
+ * @param {string} [tabUpdate.title]
+ * @param {string} [tabUpdate.url]
  * @return {Promise}
  */
 function updatePage(tabId, tabUpdate)
 {
   let {title, url} = tabUpdate;
 
-  let oldTabPage = tabPages.get(tabId);
-  if (!("url" in tabUpdate) && oldTabPage)
+  let tabPage = {
+    attention: 0,
+    audible: false,
+    isAudio: false,
+    entity: null,
+    muted: false,
+    notification: null,
+    title: null,
+    url: null
+  };
+  tabPage = tabPages.get(tabId) || tabPage;
+
+  if (!("url" in tabUpdate))
   {
-    ({url} = oldTabPage);
+    ({url} = tabPage);
   }
 
   if (!url)
     return removePage(tabId);
 
-  let entity = getEntity(url);
-  let tabPage = {attention: 0, entity, title, url};
+  if ("url" in tabUpdate)
+  {
+    let entity = getEntity(url);
+
+    // Keep tab page notification around as long as domain doesn't change
+    if (tabPage.notification && entity != tabPage.entity)
+    {
+      tabPage.notification = null;
+    }
+
+    tabPage.attention = 0;
+    tabPage.entity = getEntity(url);
+    tabPage.title = null;
+  }
+
+  if ("title" in tabUpdate)
+  {
+    tabPage.title = tabUpdate.title;
+  }
+
   // We need to set it here already to avoid a race condition
   tabPages.set(tabId, tabPage);
 
@@ -186,9 +220,12 @@ function updatePage(tabId, tabUpdate)
           if (!page)
           {
             return db.pages.add({
-              entity, title, url,
               attention: 0,
-              manualAttention: 0
+              entity: tabPage.entity,
+              isAudio: tabPage.isAudio,
+              manualAttention: 0,
+              title: tabPage.title,
+              url: tabPage.url
             });
           }
 

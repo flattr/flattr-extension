@@ -11,7 +11,6 @@ const presetStatus = require("./status/preset");
 const userStatus = require("./status/user");
 
 const authorDomains = new Set(presets.author);
-const videoDomains = new Set(presets.video);
 
 function getEntity(url)
 {
@@ -69,18 +68,6 @@ function hasAuthors(domain)
   return authorDomains.has(domain);
 }
 exports.hasDomainAuthors = hasAuthors;
-
-/**
- * Determine whether a given domain is known for containing videos
- * @param {string} domain
- * @return {boolean}
- */
-function hasVideos(domain)
-{
-  domain = tld.getDomain(domain);
-  return videoDomains.has(domain);
-}
-exports.hasDomainVideos = hasVideos;
 
 function setStatus(entity, status)
 {
