@@ -1,5 +1,7 @@
 # Flattr Extension
 
+[![Build Status][circleci-image]][circleci-url]
+
 A Flattr'ing web extension.
 
 
@@ -117,3 +119,6 @@ In addition, you need to set the following environment variables:
 - `FP_FX_DOWNLOAD_BASE_URL`
 - `FP_FX_UPLOAD_SERVER`
 - `FP_FX_UPLOAD_PATH`
+
+[circleci-url]: https://circleci.com/gh/flattr/flattr-extension
+[circleci-image]: https://circleci.com/gh/flattr/flattr-extension.png
