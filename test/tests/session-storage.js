@@ -47,10 +47,12 @@ function createMockStorage({presets})
     }
   };
 
-  let flattrManager = requireInject(
-    "../../src/lib/background/flattrManager",
-    deps
-  );
+  let eventsPath = "../../src/lib/common/events";
+  let events = requireInject(eventsPath);
+  deps[eventsPath] = events;
+
+  let flattrManagerPath = "../../src/lib/background/flattrManager";
+  let flattrManager = requireInject(flattrManagerPath, deps);
 
   function submitWrapper(func)
   {
@@ -67,15 +69,14 @@ function createMockStorage({presets})
   flattrManager.assign = submitWrapper(flattrManager.assign);
   flattrManager.submit = submitWrapper(flattrManager.submit);
 
-  deps = Object.assign({}, deps);
-  deps["../../src/lib/background/flattrManager"] = flattrManager;
+  deps[flattrManagerPath] = flattrManager;
 
   let storage = requireInject(
     "../../src/lib/background/session/storage",
     deps
   );
 
-  return {storage, flattrsDb, sessionDb, submissions};
+  return {events, flattrsDb, sessionDb, storage, submissions};
 }
 
 describe("Test session storage", () =>
@@ -280,6 +281,7 @@ describe("Test session storage", () =>
   it("Should submit a manual Flattr", () =>
   {
     const {
+      events,
       storage: {
         addAttention, fastForward, getPage, updatePage
       },
@@ -292,6 +294,11 @@ describe("Test session storage", () =>
         }
       }
     );
+
+    let once = (name) => new Promise((resolve) =>
+    {
+      events.once(name, resolve);
+    });
 
     return spawn(function*()
     {
@@ -306,14 +313,20 @@ describe("Test session storage", () =>
 
       expect(getPage(1)).to.deep.equal({attention, entity, title, url});
 
+      let flattrSaved = once("flattr-added");
+
+      // manual flattr
       yield fastForward(1);
 
       expect(ATTENTION_THRESHOLDS[0]).to.be.at.least(attention);
+
       let pages = yield sessionDb.pages.toArray();
       expect(pages).to.deep.equal([{
         attention, entity, title, url,
         manualAttention: ATTENTION_THRESHOLDS[0] - attention
       }]);
+
+      yield flattrSaved;
 
       let flattrs = yield flattrsDb.flattrs.where("url").equals(url).toArray();
 

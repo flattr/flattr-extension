@@ -15,7 +15,7 @@ const {
   SUBMIT_FLATTRS_FAILURE
 } = require("../../src/lib/background/state/types/flattrs");
 
-describe("Test the flattrs reducer", () =>
+describe("Test the flattrs reducer for submitting flattrs", () =>
 {
   it("SUBMIT_FLATTRS adds pending flattrs", () =>
   {
@@ -30,7 +30,7 @@ describe("Test the flattrs reducer", () =>
       }
     );
 
-    assert.deepEqual(state.pending, flattrsOne);
+    assert.deepEqual(state.submit.pending, flattrsOne);
 
     state = flattrsReducer(
       deepFreeze(state),
@@ -40,7 +40,7 @@ describe("Test the flattrs reducer", () =>
       }
     );
 
-    assert.deepEqual(state.pending, [
+    assert.deepEqual(state.submit.pending, [
       ...flattrsOne,
       ...flattrsTwo
     ]);
@@ -57,27 +57,27 @@ describe("Test the flattrs reducer", () =>
       flattrs: undefined
     });
 
-    assert.deepEqual(state.pending, []);
-    assert.deepEqual(state.submitting, []);
+    assert.deepEqual(state.submit.pending, []);
+    assert.deepEqual(state.submit.submitting, []);
 
     state = flattrsReducer(deepFreeze(state), {type: SUBMIT_FLATTRS, flattrs});
 
-    assert.deepEqual(state.pending, flattrs);
-    assert.deepEqual(state.submitting, []);
+    assert.deepEqual(state.submit.pending, flattrs);
+    assert.deepEqual(state.submit.submitting, []);
 
     // bad action state has no effect on current state
     state = flattrsReducer(deepFreeze(state), {type: SUBMIT_FLATTRS});
 
-    assert.deepEqual(state.pending, flattrs);
-    assert.deepEqual(state.submitting, []);
+    assert.deepEqual(state.submit.pending, flattrs);
+    assert.deepEqual(state.submit.submitting, []);
 
     // flattrs must be an array
     state = flattrsReducer(
         deepFreeze(state),
         {type: SUBMIT_FLATTRS, flattrs: {url}});
 
-    assert.deepEqual(state.pending, flattrs);
-    assert.deepEqual(state.submitting, []);
+    assert.deepEqual(state.submit.pending, flattrs);
+    assert.deepEqual(state.submit.submitting, []);
   });
 
   it("SUBMIT_FLATTRS_SUCCESS clears submitting flattrs", () =>
@@ -86,17 +86,17 @@ describe("Test the flattrs reducer", () =>
 
     let state = flattrsReducer(undefined, {type: SUBMIT_FLATTRS, flattrs});
 
-    assert.deepEqual(state, {pending: flattrs, submitting: []});
+    assert.deepEqual(state.submit, {pending: flattrs, submitting: []});
 
     state = flattrsReducer(
         deepFreeze(state),
         {type: SUBMIT_FLATTRS_MERGE_PENDING});
 
-    assert.deepEqual(state, {pending: [], submitting: flattrs});
+    assert.deepEqual(state.submit, {pending: [], submitting: flattrs});
 
     state = flattrsReducer(deepFreeze(state), {type: SUBMIT_FLATTRS_SUCCESS});
 
-    assert.deepEqual(state, {pending: [], submitting: []});
+    assert.deepEqual(state.submit, {pending: [], submitting: []});
   });
 
   it("SUBMIT_FLATTRS_FAILURE moves submitting flattrs to pending", () =>
@@ -105,14 +105,16 @@ describe("Test the flattrs reducer", () =>
 
     let state = flattrsReducer(undefined, {type: SUBMIT_FLATTRS, flattrs});
 
-    assert.deepEqual(deepFreeze(state), {pending: flattrs, submitting: []});
+    assert.deepEqual(
+      deepFreeze(state).submit,
+      {pending: flattrs, submitting: []});
 
     state = flattrsReducer(state, {type: SUBMIT_FLATTRS_MERGE_PENDING});
 
-    assert.deepEqual(state, {pending: [], submitting: flattrs});
+    assert.deepEqual(state.submit, {pending: [], submitting: flattrs});
 
     state = flattrsReducer(deepFreeze(state), {type: SUBMIT_FLATTRS_FAILURE});
 
-    assert.deepEqual(state, {pending: flattrs, submitting: []});
+    assert.deepEqual(state.submit, {pending: flattrs, submitting: []});
   });
 });

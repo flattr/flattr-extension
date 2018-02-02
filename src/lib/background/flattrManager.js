@@ -1,46 +1,15 @@
 "use strict";
 
-const {Date} = require("global/window");
-
 const {emit} = require("../common/events");
 const {db} = require("./database/flattrs");
-const {sendFlattrs} = require("./state/actions/flattrs");
+const {saveFlattrs} = require("./state/actions/flattrs");
 const {store} = require("./state");
 
 function submit({entity, tabId, title, type, url})
 {
-  return db.transaction("rw", db.flattrs, function*()
-  {
-    let {flattrs} = db;
-    if (url)
-    {
-      flattrs = flattrs.where("url").equals(url);
-    }
-    else
-    {
-      flattrs = flattrs.where("entity").equals(entity)
-          .and((entry) => entry.url == url);
-    }
-    let entry = yield flattrs.first();
-    if (!entry)
-    {
-      entry = {
-        entity, title, url,
-        timestamps: []
-      };
-    }
-    entry.timestamps.push(Date.now());
-
-    yield db.flattrs.put(entry);
-
-    return entry;
-  })
-  .then((entry) =>
-  {
-    emit("flattr-added", {flattr: entry, tabId, type});
-    store.dispatch(sendFlattrs({flattrs: [entry]}));
-    return entry;
-  });
+  store.dispatch(saveFlattrs({
+    flattrs: [{entity, tabId, title, type, url}]
+  }));
 }
 exports.submit = submit;
 

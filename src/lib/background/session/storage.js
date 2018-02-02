@@ -39,7 +39,7 @@ function addAttention(tabId, url, addedAttention, isManual)
 
         if (addedAttention >= getRemainingAttention(entity, oldAttention))
         {
-          yield flattrManager.submit({
+          flattrManager.submit({
             entity, tabId, url,
             title: page.title,
             type: "attention"
