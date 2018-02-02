@@ -159,7 +159,7 @@ exports.removePage = removePage;
  */
 function updatePage(tabId, tabUpdate)
 {
-  let {title, url} = tabUpdate;
+  let {url} = tabUpdate;
 
   let tabPage = {
     attention: 0,
@@ -236,12 +236,10 @@ function updatePage(tabId, tabUpdate)
           }
 
           tabPage.attention = page.attention + page.manualAttention;
+          tabPage.isAudio = tabUpdate.isAudio || page.isAudio;
+          tabPage.title = tabUpdate.title || page.title;
 
-          if (title && !page.title)
-          {
-            page.title = title;
-            yield db.pages.update(url, {title});
-          }
+          yield db.pages.update(url, tabUpdate);
         });
       });
 }

@@ -175,6 +175,47 @@ describe("Test session storage", () =>
     });
   });
 
+  it("Should restore page properties", () =>
+  {
+    const {
+      storage: {getPage, updatePage}
+    } = createMockStorage({
+      presets: {
+        author: [],
+        status: mockStatus
+      }
+    });
+
+    return spawn(function*()
+    {
+      yield updatePage(1, {url: `${mockUrl}a`});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
+        url: `${mockUrl}a`
+      });
+
+      yield updatePage(1, {title: "A"});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
+        title: "A",
+        url: `${mockUrl}a`
+      });
+
+      yield updatePage(1, {url: `${mockUrl}aa`});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
+        url: `${mockUrl}aa`
+      });
+
+      yield updatePage(1, {url: `${mockUrl}a`});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
+        title: "A",
+        url: `${mockUrl}a`
+      });
+    });
+  });
+
   it("Should save session changes if enabled", () =>
   {
     const {
