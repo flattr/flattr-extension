@@ -194,6 +194,7 @@ function updatePage(tabId, tabUpdate)
     tabPage.attention = 0;
     tabPage.entity = getEntity(url);
     tabPage.title = null;
+    tabPage.url = url;
   }
 
   if ("title" in tabUpdate)
@@ -231,7 +232,7 @@ function updatePage(tabId, tabUpdate)
 
           tabPage.attention = page.attention + page.manualAttention;
 
-          if (!page.title)
+          if (title && !page.title)
           {
             page.title = title;
             yield db.pages.update(url, {title});

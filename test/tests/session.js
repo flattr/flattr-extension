@@ -6,8 +6,7 @@ const {run} = require("../mocks/sessionRunner");
 const {expect} = require("../assert");
 const {
   ATTENTION_DURATION,
-  ATTENTION_THRESHOLDS,
-  ATTENTION_THRESHOLDS_VIDEO
+  ATTENTION_THRESHOLDS
 } = require("../../src/lib/common/constants");
 
 const mockEntity = "example.com";
@@ -35,8 +34,6 @@ describe("Test session management", () =>
         {
           attention: ATTENTION_DURATION,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         }
       ]
@@ -59,8 +56,6 @@ describe("Test session management", () =>
         {
           attention: ATTENTION_DURATION + 5,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         }
       ]
@@ -88,8 +83,6 @@ describe("Test session management", () =>
         {
           attention: 20,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         }
       ]
@@ -113,15 +106,11 @@ describe("Test session management", () =>
         {
           attention: 5,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         },
         {
           attention: ATTENTION_DURATION,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrlOther
         }
       ]
@@ -143,8 +132,6 @@ describe("Test session management", () =>
         {
           attention: 5,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         }
       ]
@@ -172,15 +159,11 @@ describe("Test session management", () =>
         {
           attention: 5,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         },
         {
           attention: ATTENTION_DURATION,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrlOther
         }
       ]
@@ -207,8 +190,6 @@ describe("Test session management", () =>
         {
           attention: 15,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         }
       ]
@@ -234,15 +215,11 @@ describe("Test session management", () =>
         {
           attention: 5,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrlOther
         },
         {
           attention: 10,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         }
       ]
@@ -266,7 +243,6 @@ describe("Test session management", () =>
           attention: 10,
           entity: mockEntity,
           manualAttention: ATTENTION_THRESHOLDS[0] - 5,
-          title: undefined,
           url: mockUrl
         }
       ],
@@ -299,8 +275,6 @@ describe("Test session management", () =>
         {
           attention: ATTENTION_DURATION * 7,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         }
       ],
@@ -335,54 +309,12 @@ describe("Test session management", () =>
           attention: ATTENTION_DURATION * 4 + 10,
           entity: mockEntity,
           manualAttention: 31,
-          title: undefined,
           url: mockUrl
         }
       ],
       expectedSubmissions: [
         [1480000325000, mockUrl],
         [1480000415000, mockUrl]
-      ]
-    });
-  });
-
-  it("Should use different thresholds for video sites", () =>
-  {
-    expect(ATTENTION_DURATION).to.be.within(5, 90);
-    expect(ATTENTION_THRESHOLDS[2]).to.be.at.most(ATTENTION_DURATION * 10);
-    expect(ATTENTION_THRESHOLDS_VIDEO[2])
-      .to.be.at.least(ATTENTION_DURATION * 10);
-
-    let url = "http://www.video.com/myvideo";
-    return run({
-      events: [
-        [1480000000000, 1, "created", {index: 1, openerId: null, windowId: 1}],
-        [1480000005000, 1, "selected", null],
-        [1480000009000, 1, "url", url],
-        [1480000010000, 1, "page-loaded", 200],
-        [1480000100000, 1, "pointermoved", null],
-        [1480000200000, 1, "pointermoved", null],
-        [1480000300000, 1, "pointermoved", null],
-        [1480000400000, 1, "pointermoved", null],
-        [1480000500000, 1, "pointermoved", null],
-        [1480000600000, 1, "pointermoved", null],
-        [1480000700000, 1, "pointermoved", null],
-        [1480000800000, 1, "pointermoved", null],
-        [1480000900000, 1, "pointermoved", null],
-        [1480001000000, 1, "removed", null]
-      ],
-      expectedPages: [
-        {
-          attention: ATTENTION_DURATION * 10,
-          entity: "video.com",
-          manualAttention: 0,
-          title: undefined,
-          url
-        }
-      ],
-      expectedSubmissions: [
-        [1480000315000, url],
-        [1480000615000, url]
       ]
     });
   });
@@ -401,8 +333,6 @@ describe("Test session management", () =>
         {
           attention: 0,
           entity: mockEntity,
-          manualAttention: 0,
-          title: undefined,
           url: mockUrl
         }
       ]
