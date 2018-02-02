@@ -193,13 +193,18 @@ function updatePage(tabId, tabUpdate)
 
     tabPage.attention = 0;
     tabPage.entity = getEntity(url);
+    tabPage.isAudio = false;
     tabPage.title = null;
     tabPage.url = url;
+    delete tabUpdate.url;
   }
 
-  if ("title" in tabUpdate)
+  for (let prop in tabUpdate)
   {
-    tabPage.title = tabUpdate.title;
+    if (!(prop in tabPage))
+      continue;
+
+    tabPage[prop] = tabUpdate[prop];
   }
 
   // We need to set it here already to avoid a race condition

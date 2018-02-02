@@ -156,6 +156,14 @@ describe("Test session storage", () =>
         url: `${mockUrl}a`
       });
 
+      yield updatePage(1, {isAudio: true});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
+        isAudio: true,
+        title: "AA",
+        url: `${mockUrl}a`
+      });
+
       yield updatePage(1, {url: `${mockUrl}aa`});
       expectTabPage(getPage(1), {
         entity: mockEntity,
