@@ -11,8 +11,8 @@ on("data", ({tabId, action, data}) =>
   {
     case "audible":
     case "muted":
-      audio.update(tabId, action, data);
-      break;
+      return attention.stop(tabId)
+        .then(() => audio.update(tabId, action, data));
     case "idle":
       switch (data)
       {
