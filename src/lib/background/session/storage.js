@@ -10,14 +10,9 @@ const {getRemainingAttention} = require("./thresholds");
 const {db} = require("../database/session");
 const tabPages = require("../tabPages");
 
-function addAttention(tabId, url, addedAttention, type)
+function addAttention(tabId, url, addedAttention, isManual)
 {
   if (addedAttention == 0)
-    return Promise.resolve();
-
-  // Ignore generic attention while the tab is playing audio
-  let tabPage = tabPages.get(tabId);
-  if (tabPage && tabPage.isAudio && !type)
     return Promise.resolve();
 
   // We cannot put getStatus() inside the transaction scope
@@ -31,7 +26,7 @@ function addAttention(tabId, url, addedAttention, type)
       return;
 
     let entity = getEntity(url);
-    let property = (type == "manual") ? "manualAttention" : "attention";
+    let property = (isManual) ? "manualAttention" : "attention";
 
     return new Dexie.Promise((resolve, reject) =>
     {
@@ -56,7 +51,7 @@ function addAttention(tabId, url, addedAttention, type)
     })
     .then((attention) =>
     {
-      tabPage = tabPages.get(tabId);
+      let tabPage = tabPages.get(tabId);
       if (tabPage && tabPage.url == url)
       {
         tabPage.attention = attention;
@@ -80,7 +75,7 @@ function fastForward(tabId)
 
   let {attention, url} = tabPage;
   attention = getRemainingAttention(url, attention);
-  return addAttention(tabId, url, attention, "manual");
+  return addAttention(tabId, url, attention, true);
 }
 exports.fastForward = fastForward;
 

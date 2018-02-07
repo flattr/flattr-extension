@@ -5,11 +5,12 @@ const {
   clearTimeout, setTimeout
 } = require("global/window");
 const {
-  ATTENTION_AUDIO_INTERVAL: INTERVAL,
+  ATTENTION_DURATION,
   ATTENTION_AUDIO_INTERVAL_SYM: INTERVAL_SYM,
   ATTENTION_AUDIO_TIMEOUT: TIMEOUT,
   ATTENTION_AUDIO_TIMEOUT_SYM: TIMEOUT_SYM
 } = require("../../common/constants");
+const {record} = require("../stats/record");
 const tabPages = require("../tabPages");
 const storage = require("./storage");
 
@@ -27,10 +28,6 @@ function onTimeout(tabId, tabPage)
     .then(() =>
     {
       delete tabPage[TIMEOUT_SYM];
-      tabPage[INTERVAL_SYM] = setInterval(
-        storage.addAttention, INTERVAL,
-        tabId, tabPage.url, INTERVAL / 1000, "audio"
-      );
     });
 }
 
@@ -62,9 +59,20 @@ function update(tabId, action, data)
   if (INTERVAL_SYM in tabPage || TIMEOUT_SYM in tabPage)
     throw new Error("Tab page already has audio timeout or interval");
 
-  tabPage[TIMEOUT_SYM] = setTimeout(
-    onTimeout, TIMEOUT,
-    tabId, tabPage
+  // If the tab has been playing audio for a while, we mark it so that we know
+  // which attention thresholds we should use
+  if (!tabPage.isAudio)
+  {
+    tabPage[TIMEOUT_SYM] = setTimeout(
+      onTimeout, TIMEOUT,
+      tabId, tabPage
+    );
+  }
+
+  // Attention should be gathered continuously while audio is playing
+  tabPage[INTERVAL_SYM] = setInterval(
+    record, ATTENTION_DURATION * 1000,
+    tabId, "audible-ongoing"
   );
 }
 exports.update = update;

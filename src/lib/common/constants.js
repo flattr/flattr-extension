@@ -43,8 +43,6 @@ exports.API_RETRY_DELAY_MS = [
   3840000 // 01h:04m:00s
 ];
 
-
-exports.ATTENTION_AUDIO_INTERVAL = 15000; // 00h:00m:15s
 exports.ATTENTION_AUDIO_INTERVAL_SYM = Symbol("Audio attention interval");
 exports.ATTENTION_AUDIO_THRESHOLDS = [
   140, // 00h:02m:20s
@@ -54,7 +52,7 @@ exports.ATTENTION_AUDIO_THRESHOLDS = [
   2460, // 00h:41m:00s
   3660 // 01h:01m:00s
 ];
-exports.ATTENTION_AUDIO_TIMEOUT = 30000; // 00h:00:30s
+exports.ATTENTION_AUDIO_TIMEOUT = 20000; // 00h:00:20s
 exports.ATTENTION_AUDIO_TIMEOUT_SYM = Symbol("Audio attention timeout");
 
 exports.ATTENTION_DURATION = 15; // 00:00:15

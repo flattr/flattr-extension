@@ -246,6 +246,10 @@ function run({
     },
     "../../src/lib/background/server/api": {
       sendFlattrs: () => Promise.resolve({ok: true})
+    },
+    "../../src/lib/background/session/audio": {
+      reset() {},
+      update() {}
     }
   });
 

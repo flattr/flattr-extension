@@ -11,8 +11,7 @@ on("data", ({tabId, action, data}) =>
   {
     case "audible":
     case "muted":
-      return attention.stop(tabId)
-        .then(() => audio.update(tabId, action, data));
+      return audio.update(tabId, action, data);
     case "idle":
       switch (data)
       {
@@ -33,7 +32,7 @@ on("data", ({tabId, action, data}) =>
 
       // fall through
     case "removed":
-      audio.reset();
+      audio.reset(tabId);
       return attention.stop(tabId).then(() => storage.removePage(tabId));
     case "selected":
       attention.select(tabId);
@@ -52,6 +51,7 @@ on("data", ({tabId, action, data}) =>
     case "url":
       audio.reset(tabId);
       return storage.updatePage(tabId, {url: data});
+    case "audible-ongoing":
     case "keypressed":
     case "pointerclicked":
     case "pointermoved":
