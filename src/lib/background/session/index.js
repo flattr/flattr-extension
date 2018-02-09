@@ -11,7 +11,23 @@ on("data", ({tabId, action, data}) =>
   {
     case "audible":
     case "muted":
-      return audio.update(tabId, action, data);
+      let tabPage = storage.getPage(tabId);
+      if (!tabPage)
+        return;
+
+      let wasAudible = audio.isAudible(tabPage);
+      audio.update(tabId, action, data);
+      let isAudible = audio.isAudible(tabPage);
+
+      // Start gathering attention immediately when audio starts playing
+      if (!wasAudible && isAudible)
+        return attention.start(tabId);
+
+      // Stop gathering attention immediately when audio stops playing
+      if (wasAudible && !isAudible)
+        return attention.stop();
+
+      break;
     case "idle":
       switch (data)
       {

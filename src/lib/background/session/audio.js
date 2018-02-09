@@ -31,6 +31,9 @@ function onTimeout(tabId, tabPage)
     });
 }
 
+let isAudible = ({audible, muted}) => audible && !muted;
+exports.isAudible = isAudible;
+
 function reset(tabId)
 {
   let tabPage = tabPages.get(tabId);
@@ -50,7 +53,7 @@ function update(tabId, action, data)
     return;
 
   tabPage[action] = data;
-  if (!tabPage.audible || tabPage.muted)
+  if (!isAudible(tabPage))
   {
     resetTimers(tabPage);
     return;
@@ -72,7 +75,7 @@ function update(tabId, action, data)
   // Attention should be gathered continuously while audio is playing
   tabPage[INTERVAL_SYM] = setInterval(
     record, ATTENTION_DURATION * 1000,
-    tabId, "audible-ongoing"
+    tabId, "audible-ongoing", null
   );
 }
 exports.update = update;
