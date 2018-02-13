@@ -404,7 +404,7 @@ describe("Test session management", () =>
       ],
       expectedPages: [
         {
-          attention: 25,
+          attention: 15,
           entity: mockEntity,
           url: mockUrlVideo
         }

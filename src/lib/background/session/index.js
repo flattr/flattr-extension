@@ -21,13 +21,15 @@ on("data", ({tabId, action, data}) =>
 
       // Start gathering attention immediately when audio starts playing
       if (!wasAudible && isAudible)
-        return attention.start(tabId);
+        return attention.start(tabId, {background: true});
 
       // Stop gathering attention immediately when audio stops playing
       if (wasAudible && !isAudible)
-        return attention.stop();
+        return attention.stop(tabId, {background: true});
 
-      break;
+      return;
+    case "audible-ongoing":
+      return attention.start(tabId, {background: true});
     case "idle":
       switch (data)
       {
@@ -67,7 +69,6 @@ on("data", ({tabId, action, data}) =>
     case "url":
       audio.reset(tabId);
       return storage.updatePage(tabId, {url: data});
-    case "audible-ongoing":
     case "keypressed":
     case "pointerclicked":
     case "pointermoved":
@@ -77,6 +78,7 @@ on("data", ({tabId, action, data}) =>
     case "zoom":
       return attention.start(tabId);
     case "user-flattr-added":
-      return attention.interrupt(tabId).then(() => storage.fastForward(tabId));
+      return attention.stop(tabId, {resumable: true})
+        .then(() => storage.fastForward(tabId));
   }
 });

@@ -101,7 +101,7 @@ describe("Test attention management", () =>
     let date = {now: 0};
     let pages = new Map();
     let timeouts = [];
-    const {interrupt, select, start, stop} = createMock({
+    const {select, start, stop} = createMock({
       attentions, date, pages, timeouts
     });
 
@@ -138,7 +138,7 @@ describe("Test attention management", () =>
       pages.set(1, {url: "f"});
       yield start(1);
       date.now++;
-      yield interrupt(1);
+      yield stop(1, {resumable: true});
       date.now += ATTENTION_DURATION - 1;
       timeouts[0]();
 
@@ -149,6 +149,50 @@ describe("Test attention management", () =>
         d: ATTENTION_DURATION,
         e: 1,
         f: ATTENTION_DURATION
+      });
+    });
+  });
+
+  it("Should gather background attention in parallel", () =>
+  {
+    let attentions = Object.create(null);
+    let date = {now: 0};
+    let pages = new Map();
+    let timeouts = [];
+    const {select, start, stop} = createMock({
+      attentions, date, pages, timeouts
+    });
+
+    select(1);
+    return spawn(function*()
+    {
+      pages.set(1, {url: "foreground"});
+      yield start(1);
+
+      date.now = 1;
+
+      pages.set(2, {url: "background-a"});
+      yield start(2, {background: true});
+
+      date.now = 3;
+      timeouts[0]();
+
+      pages.set(3, {url: "background-b"});
+      yield start(3, {background: true});
+
+      date.now = 9;
+      timeouts[0]();
+      yield stop(2, {background: true});
+
+      date.now = 27;
+      timeouts[0]();
+      yield stop(3, {background: true});
+
+      expect(timeouts.length).to.equal(0);
+      expect(attentions).to.deep.equal({
+        "background-a": 8,
+        "background-b": 24,
+        "foreground": 3
       });
     });
   });
