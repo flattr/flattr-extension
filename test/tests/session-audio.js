@@ -16,13 +16,14 @@ function expectTabPage(tabPage, flags)
 {
   flags = new Set(flags);
 
-  expect(tabPage.audible).to.equal(flags.has("audible"));
-  expect(tabPage.muted).to.equal(flags.has("muted"));
-  expect(!!tabPage.isAudio).to.equal(flags.has("isAudio"));
+  expect(tabPage.audible).to.equal(flags.has("audible"), "audible differs");
+  expect(tabPage.muted).to.equal(flags.has("muted"), "muted differs");
+  expect(!!tabPage.isAudio).to.equal(flags.has("isAudio"), "isAudio differs");
 
   expect(ATTENTION_AUDIO_INTERVAL_SYM in tabPage)
-    .to.equal(flags.has("interval"));
-  expect(ATTENTION_AUDIO_TIMEOUT_SYM in tabPage).to.equal(flags.has("timeout"));
+    .to.equal(flags.has("interval"), "Interval differs");
+  expect(ATTENTION_AUDIO_TIMEOUT_SYM in tabPage)
+    .to.equal(flags.has("timeout"), "Timeout differs");
 }
 
 function expectEvents(tabPage, eventLog, expecting)
@@ -38,8 +39,11 @@ function expectEvents(tabPage, eventLog, expecting)
       case "interval.set":
         expected = [
           expected, ATTENTION_DURATION * 1000,
-          1, "audible-ongoing"
+          1, "audible-ongoing", null
         ];
+        break;
+      case "record":
+        expected = ["record", 1, "audible-ongoing", null];
         break;
       case "timeout.set":
         expected = [
@@ -53,11 +57,11 @@ function expectEvents(tabPage, eventLog, expecting)
   }
 }
 
-function createMock()
+function createMock(tabPage = {})
 {
+  tabPage = Object.assign({audible: false, muted: false}, tabPage);
   let interval;
   let eventLog = [];
-  let tabPage = {audible: false, muted: false};
   let timeout;
 
   let audio = requireInject("../../src/lib/background/session/audio", {
@@ -84,7 +88,10 @@ function createMock()
       }
     },
     "../../src/lib/background/stats/record": {
-      record(tabId, action, data) {}
+      record(...args)
+      {
+        eventLog.push(["record", ...args]);
+      }
     },
     "../../src/lib/background/tabPages": new Map([[1, tabPage]])
   });
@@ -105,10 +112,16 @@ describe("Test audio-based flattring", () =>
     const {emit, on} = require("../../src/lib/common/events");
 
     let eventLog;
+    let audibleStates;
     let log = (...event) => eventLog.push(event);
 
     requireInject("../../src/lib/background/session", {
       "../../src/lib/background/session/attention": {
+        start(...args)
+        {
+          log("start", ...args);
+          return Promise.resolve();
+        },
         stop(...args)
         {
           log("stop", ...args);
@@ -116,36 +129,90 @@ describe("Test audio-based flattring", () =>
         }
       },
       "../../src/lib/background/session/audio": {
+        isAudible: () => audibleStates.shift(),
         reset: log.bind(null, "audio.reset"),
         update: log.bind(null, "audio.update")
       },
       "../../src/lib/background/session/storage": {
-        removePage: log.bind(null, "remove")
+        getPage: () => ({}),
+        removePage: log.bind(null, "remove"),
+        updatePage: log.bind(null, "update")
       },
       "../../src/lib/common/events": {on}
     });
 
-    return spawn(function*()
+    async function checkEvents(newAudibleStates, [action, data], expected)
     {
       eventLog = [];
-      yield emit("data", {tabId: 1, action: "audible", data: true});
-      expect(eventLog).to.deep.equal([
-        ["audio.update", 1, "audible", true]
-      ]);
+      audibleStates = newAudibleStates;
+      await emit("data", {tabId: 1, action, data});
+      expect(eventLog).to.deep.equal(expected);
+    }
 
-      eventLog = [];
-      yield emit("data", {tabId: 1, action: "muted", data: true});
-      expect(eventLog).to.deep.equal([
-        ["audio.update", 1, "muted", true]
-      ]);
+    return spawn(function*()
+    {
+      yield checkEvents(
+        [true, true], ["audible", true],
+        [["audio.update", 1, "audible", true]]
+      );
+      yield checkEvents(
+        [false, true], ["audible", true],
+        [
+          ["audio.update", 1, "audible", true],
+          ["start", 1, {background: true}]
+        ]
+      );
+      yield checkEvents(
+        [false, false], ["audible", false],
+        [["audio.update", 1, "audible", false]]
+      );
+      yield checkEvents(
+        [true, false], ["audible", false],
+        [
+          ["audio.update", 1, "audible", false],
+          ["stop", 1, {background: true}]
+        ]
+      );
 
-      eventLog = [];
-      yield emit("data", {tabId: 1, action: "removed", data: true});
-      expect(eventLog).to.deep.equal([
-        ["audio.reset", 1],
-        ["stop", 1],
-        ["remove", 1]
-      ]);
+      yield checkEvents(
+        [true, true], ["muted", false],
+        [["audio.update", 1, "muted", false]]
+      );
+      yield checkEvents(
+        [false, true], ["muted", false],
+        [
+          ["audio.update", 1, "muted", false],
+          ["start", 1, {background: true}]
+        ]
+      );
+      yield checkEvents(
+        [false, false], ["muted", true],
+        [["audio.update", 1, "muted", true]]
+      );
+      yield checkEvents(
+        [true, false], ["muted", true],
+        [
+          ["audio.update", 1, "muted", true],
+          ["stop", 1, {background: true}]
+        ]
+      );
+
+      yield checkEvents(
+        null, ["url", "foo"],
+        [
+          ["audio.reset", 1],
+          ["update", 1, {url: "foo"}]
+        ]
+      );
+
+      yield checkEvents(
+        null, ["removed", true],
+        [
+          ["audio.reset", 1],
+          ["stop", 1],
+          ["remove", 1]
+        ]
+      );
     });
   });
 
@@ -185,6 +252,31 @@ describe("Test audio-based flattring", () =>
       checkTabPage(["audible", "interval", "isAudio"]);
 
       checkEvents(["timeout.set", "interval.set"]);
+    });
+  });
+
+  it("Should not set timeout when marked as isAudio", () =>
+  {
+    const {audio, checkEvents, checkTabPage} = createMock({isAudio: true});
+
+    audio.update(1, "audible", true);
+    checkTabPage(["audible", "interval", "isAudio"]);
+
+    checkEvents(["interval.set"]);
+  });
+
+  it("Should dispatch audible-ongoing event when interval triggers", () =>
+  {
+    const {audio, checkEvents, checkTabPage, interval} = createMock();
+
+    return spawn(function*()
+    {
+      audio.update(1, "audible", true);
+      checkTabPage(["audible", "interval", "timeout"]);
+      yield interval();
+      checkTabPage(["audible", "interval", "timeout"]);
+
+      checkEvents(["timeout.set", "interval.set", "record"]);
     });
   });
 
