@@ -310,7 +310,7 @@
     "message": "Choose subscription"
   },
   "flattr_subscription_message": {
-    "message": "Please choose and activate your subscription to flattr creators."
+    "message": "Keep in mind that without an active subscription, your favorite creators won't receive any money from you. Any flattrs made without an active subscription will not be converted into money."
   },
   "flattr_subscription_title": {
     "message": "No subscription active"

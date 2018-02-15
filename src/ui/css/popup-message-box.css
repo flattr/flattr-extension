@@ -6,7 +6,7 @@
   font-style: normal;
 }
 
-popup-beta
+.message-box
 {
   display: block;
   padding: 10px 15px;
@@ -17,20 +17,24 @@ popup-beta
   transition-duration: 200ms;
 }
 
-popup-beta > h2
+.message-box > h2
 {
   display: flex;
   margin: 0;
   font-size: 1.1em;
+}
+
+.message-box > h2 > *
+{
   cursor: pointer;
 }
 
-popup-beta > h2 > span
+.message-box > h2 > span
 {
   flex-grow: 1;
 }
 
-popup-beta > h2 > button
+.message-box > h2 > button
 {
   border: none;
   font-weight: inherit;
@@ -41,39 +45,39 @@ popup-beta > h2 > button
   transition-duration: 200ms;
 }
 
-popup-beta > h2 > button::after
+.message-box > h2 > button::after
 {
   font-family: flattr-icons;
   content: "\e60d"; /* icon-caret */
 }
 
-popup-beta > h2:hover > button
+.message-box > h2:hover > button
 {
   color: #1AA3D4;;
 }
 
-popup-beta[collapsed]
+.message-box[collapsed]
 {
   border-color: #F2F2F2;
   background-color: #F2F2F2;
 }
 
-popup-beta:not([collapsed]) > h2 > button
+.message-box:not([collapsed]) > h2 > button
 {
   transform: scaleY(-1);
 }
 
-popup-beta[collapsed] > p
+.message-box[collapsed] > p
 {
   display: none;
 }
 
-popup-beta > p:last-child
+.message-box > p:last-child
 {
   margin-bottom: 0;
 }
 
-popup-beta a
+.message-box a
 {
   text-decoration: underline;
 }

@@ -293,7 +293,7 @@ describe("Test account management", () =>
     });
   });
 
-  it("Should not submit anything without active subscription", () =>
+  it("Should submit Flattrs even without active subscription", () =>
   {
     let fetchCount = 0;
 
@@ -313,8 +313,8 @@ describe("Test account management", () =>
       yield account.setToken(mockToken);
 
       let {status} = yield serverApi.sendFlattrs({flattrs: [{url: "foo"}]});
-      expect(fetchCount).to.equal(0);
-      expect(status).to.equal(402);
+      expect(fetchCount).to.equal(1);
+      expect(status).to.equal(200);
     });
   });
 

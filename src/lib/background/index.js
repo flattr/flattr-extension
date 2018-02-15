@@ -233,5 +233,4 @@ on("authentication-changed", (isAuthenticated) =>
   });
   refreshTabStates();
 });
-on("subscription-changed", () => refreshTabStates());
 on("reset", () => refreshTabStates());

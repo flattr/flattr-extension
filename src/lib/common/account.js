@@ -32,15 +32,10 @@ function hasSubscription()
 exports.hasSubscription = hasSubscription;
 
 /**
- * Determine whether user account is complete and extension should be active
+ * Determine whether user account is ready and extension should be active
  * @return {Promise<boolean>}
  */
-function isActive()
-{
-  return Promise.all([isAuthenticated(), hasSubscription()])
-    .then(([authenticated, subscribed]) => authenticated && subscribed);
-}
-exports.isActive = isActive;
+exports.isActive = isAuthenticated;
 
 /**
  * Determine whether user linked Flattr account

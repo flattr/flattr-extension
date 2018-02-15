@@ -12,7 +12,7 @@ const i18n = require("../../i18n");
 function create()
 {
   return [
-    h("h3", i18n.get("flattr_subscription_title")),
+    h("h2", i18n.get("flattr_subscription_title")),
     h("p", i18n.get("flattr_subscription_message")),
     h(
       "a.button.primary",
