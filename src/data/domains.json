@@ -19,12 +19,12 @@
   ],
   "org": {
     "chromium": {
-      "": 1,
+      "*": 1,
       "bugs": 3,
       "cs": 3
     },
     "xenite": {
-      "": 1,
+      "*": 1,
       "shop": 3
     }
   },
@@ -2125,7 +2125,7 @@
       "4xauto": 1,
       "4xbxb": 1,
       "500px": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/classes": 3,
         "/editors": 3,
@@ -8806,9 +8806,8 @@
       "flexonline": 1,
       "flickeringmyth": 1,
       "flickr": {
-        "": 1,
+        "*": 1,
         "www": {
-          "": 1,
           "/": 3,
           "/cameras": 3,
           "/commons": 3,
@@ -9140,9 +9139,8 @@
       "freedombankwv": 3,
       "freedsound": 1,
       "freefavicon": {
-        "": 1,
+        "*": 1,
         "www": {
-          "": 1,
           "/iconmaker": 3
         }
       },
@@ -9796,7 +9794,7 @@
       "gistmania": 1,
       "gistreel": 1,
       "github": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/issues": 3,
         "/marketplace": 3,
@@ -12263,7 +12261,7 @@
       "kaufmanherald": 1,
       "kawarthanow": 1,
       "kazunekoyama": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/about": 3,
         "/c112": 3,
@@ -14019,7 +14017,7 @@
       "mediosordo": 1,
       "mediotiempo": 1,
       "medium": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/about": 3,
         "/browse": 3,
@@ -19247,7 +19245,7 @@
       "soundandvision": 1,
       "soundclick": 1,
       "soundcloud": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/charts": 3,
         "/jobs": 3,
@@ -22221,7 +22219,7 @@
       "twitrand": 1,
       "twitrcovers": 1,
       "twitter": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/following": 3,
         "/hashtag": 3,
@@ -22737,7 +22735,7 @@
       "villeplattetoday": 1,
       "villiscareview": 1,
       "vimeo": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/business": 3,
         "/create": 3,
@@ -23712,7 +23710,7 @@
       "wordnerdmemoir": 1,
       "wordpandit": 1,
       "wordpress": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/about": 3,
         "/features": 3,
@@ -24127,9 +24125,8 @@
       "youthkiawaaz": 1,
       "youthvocal": 1,
       "youtube": {
-        "": 1,
+        "*": 1,
         "www": {
-          "": 1,
           "/": 3,
           "/account": 3,
           "/account_notifications": 3,
@@ -24226,7 +24223,7 @@
       "zeemasti": 1,
       "zehabesha": 1,
       "zelaphas": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/commission": 3,
         "/contact": 3,
@@ -25618,7 +25615,7 @@
       "kalenderpedia": 1,
       "kaliban": 1,
       "kanzlei-mieth": {
-        "": 1,
+        "*": 1,
         "/": 3,
         "/faq": 3,
         "/impressum": 3,
@@ -26638,7 +26635,7 @@
       "systemfehlr": 1,
       "sz-online": 1,
       "t-online": {
-        "": 1,
+        "*": 1,
         "email": 3,
         "freemail": 3,
         "gutscheine": 3,
@@ -26649,7 +26646,6 @@
         "tarife-und-produkte": 3,
         "telefonbuch": 3,
         "www": {
-          "": 1,
           "/preisvergleich": 3,
           "/shopping": 3
         }
@@ -37210,13 +37206,12 @@
       "twinge": 1,
       "twit": 1,
       "twitch": {
-        "": 1,
+        "*": 1,
         "app": 3,
         "dev": 3,
         "help": 3,
         "music": 3,
         "www": {
-          "": 1,
           "/": 3,
           "/directory": 3,
           "/store": 3
