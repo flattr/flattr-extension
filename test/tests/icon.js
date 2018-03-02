@@ -129,8 +129,8 @@ describe("Test browserAction icon", () =>
 
   it("Enabled", () => run("enabled", {}, {}));
 
-  it("Error (no subscription)", () =>
-      run("error", {text: "!"}, {subscribed: false}));
+  it("Enabled (no subscription)", () =>
+      run("enabled", {}, {subscribed: false}));
 
   it("Notification (info)", () =>
   {

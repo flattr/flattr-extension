@@ -13,12 +13,9 @@ function send({account, flattrs})
   if (flattrs.length < 1)
     return Promise.resolve({ok: true});
 
-  let {subscription, token} = account;
+  let {token} = account;
   if (!token.accessToken)
     return Promise.resolve({ok: false, status: 401});
-
-  if (!subscription.active)
-    return Promise.resolve({ok: false, status: 402});
 
   return fetch(
     `${API_BASE}/rest/v2/flattr/bulk`,

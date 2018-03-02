@@ -87,19 +87,11 @@ function updateIcon(tabId)
     state: "disabled"
   };
 
-  Promise.all([account.hasSubscription(), account.isAuthenticated()])
-    .then(([hasSubscription, isAuthenticated]) =>
+  account.isAuthenticated()
+    .then((isAuthenticated) =>
     {
       if (!isAuthenticated)
       {
-        setIconState(tabIcon);
-        return;
-      }
-
-      if (!hasSubscription)
-      {
-        tabIcon.state = "error";
-        tabIcon.text = "!";
         setIconState(tabIcon);
         return;
       }
@@ -205,7 +197,6 @@ on("flattr-added", ({flattr}) => onStateChanged(flattr));
 on("flattrs-removed", onStateChanged);
 on("status-changed", onStateChanged);
 on("authentication-changed", () => onStateChanged({}));
-on("subscription-changed", () => onStateChanged({}));
 
 on("notification-changed", ({notification, tabId}) =>
 {

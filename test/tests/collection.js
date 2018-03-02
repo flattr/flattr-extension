@@ -219,9 +219,9 @@ describe("Test background page data collection", () =>
   {
     let expecting = {
       "authenticated": 1,
-      "selected-initial": 4,
+      "selected-initial": 3,
       "started": 1,
-      "state": 8
+      "state": 6
     };
 
     chrome.runtime.id = "extensionid";

@@ -67,7 +67,7 @@ class FlattrPopup extends VirtualElement
 
     // Don't show notification if extension is inactive
     let notificationId = null;
-    if (this._authenticated && this._subscription)
+    if (this._authenticated)
     {
       notificationId = this._notification;
     }
@@ -89,18 +89,17 @@ class FlattrPopup extends VirtualElement
     }
     else
     {
+      let messageBox = h("popup-beta.message-box");
       if (!this._subscription)
       {
-        body.push(h("div.message", v("subscribe-message")));
+        messageBox = h("div.message-box", v("subscribe-message"));
       }
-      else
-      {
-        body.push(
-          h("div#notification"),
-          h("flattr-control"),
-          h("popup-beta")
-        );
-      }
+
+      body.push(
+        h("div#notification"),
+        h("flattr-control"),
+        messageBox
+      );
 
       footer.push(
         h(
