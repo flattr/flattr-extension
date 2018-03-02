@@ -32,7 +32,7 @@ function hasSubscription()
 exports.hasSubscription = hasSubscription;
 
 /**
- * Determine whether user account is ready and extension should be active
+ * Determine whether extension should be active
  * @return {Promise<boolean>}
  */
 exports.isActive = isAuthenticated;
