@@ -148,6 +148,7 @@ exports.removePage = removePage;
  * Update one or more tab page properties
  * @param {number} tabId
  * @param {Object} tabUpdate
+ * @param {boolean} [tabUpdate.isAudio]
  * @param {string} [tabUpdate.title]
  * @param {string} [tabUpdate.url]
  * @return {Promise}
@@ -187,7 +188,7 @@ function updatePage(tabId, tabUpdate)
     }
 
     tabPage.attention = 0;
-    tabPage.entity = getEntity(url);
+    tabPage.entity = entity;
     tabPage.isAudio = false;
     tabPage.title = null;
     tabPage.url = url;

@@ -62,6 +62,8 @@ function stop(tabId, options = {})
 }
 exports.stop = stop;
 
+exports.interrupt = (tabId) => stop(tabId, {resumable: true});
+
 /**
  * Start attention gathering for tab with given ID
  * @param {number} tabId

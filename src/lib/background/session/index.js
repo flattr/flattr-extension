@@ -78,7 +78,6 @@ on("data", ({tabId, action, data}) =>
     case "zoom":
       return attention.start(tabId);
     case "user-flattr-added":
-      return attention.stop(tabId, {resumable: true})
-        .then(() => storage.fastForward(tabId));
+      return attention.interrupt(tabId).then(() => storage.fastForward(tabId));
   }
 });

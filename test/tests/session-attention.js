@@ -101,7 +101,7 @@ describe("Test attention management", () =>
     let date = {now: 0};
     let pages = new Map();
     let timeouts = [];
-    const {select, start, stop} = createMock({
+    const {interrupt, select, start, stop} = createMock({
       attentions, date, pages, timeouts
     });
 
@@ -138,7 +138,7 @@ describe("Test attention management", () =>
       pages.set(1, {url: "f"});
       yield start(1);
       date.now++;
-      yield stop(1, {resumable: true});
+      yield interrupt(1);
       date.now += ATTENTION_DURATION - 1;
       timeouts[0]();
 
