@@ -10,6 +10,9 @@ let apiDomain = ("__BUILD_TYPE__" == "release") ? "flattr.com" : "smickr.net";
  */
 exports.API_BASE_DOMAIN = apiDomain;
 
+const FILES_BASE = "https://files.flattr.com";
+exports.FILES_DOMAINS_UPDATE = `${FILES_BASE}/domains.json`;
+
 /**
  * Base URL of API endpoints
  * @type {string}

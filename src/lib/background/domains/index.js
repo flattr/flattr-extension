@@ -2,16 +2,13 @@
 
 const tld = require("tldjs");
 
-const presets = require("../../../data/domains");
 const {STATUS_BLOCKED, STATUS_DISABLED, STATUS_ENABLED, STATUS_UNDEFINED} =
     require("../../common/constants");
 const {emit} = require("../../common/events");
 const {normalizeURL} = require("../../common/utils");
 const presetStatus = require("./status/preset");
 const userStatus = require("./status/user");
-
-const authorDomains = new Set(presets.author);
-const videoDomains = new Set(presets.video);
+require("./task").runTask();
 
 function getEntity(url)
 {
@@ -66,7 +63,7 @@ exports.getStatus = getStatus;
 function hasAuthors(domain)
 {
   domain = tld.getDomain(domain);
-  return authorDomains.has(domain);
+  return presetStatus.isAuthorDomain(domain);
 }
 exports.hasDomainAuthors = hasAuthors;
 
@@ -78,7 +75,7 @@ exports.hasDomainAuthors = hasAuthors;
 function hasVideos(domain)
 {
   domain = tld.getDomain(domain);
-  return videoDomains.has(domain);
+  return presetStatus.hasVideos(domain);
 }
 exports.hasDomainVideos = hasVideos;
 
