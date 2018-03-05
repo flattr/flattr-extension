@@ -118,3 +118,13 @@ function expectLoaded(expected)
   moduleIds = null;
 }
 exports.expectLoaded = expectLoaded;
+
+function prepareExpectObject(base)
+{
+  return (obj, expected) =>
+  {
+    expected = Object.assign({}, base, expected);
+    expect(obj).to.deep.equal(expected);
+  };
+}
+exports.prepareExpectObject = prepareExpectObject;

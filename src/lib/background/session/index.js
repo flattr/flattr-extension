@@ -1,6 +1,7 @@
 "use strict";
 
 const {on} = require("../../common/events");
+const audio = require("./audio");
 const attention = require("./attention");
 const storage = require("./storage");
 
@@ -8,6 +9,27 @@ on("data", ({tabId, action, data}) =>
 {
   switch (action)
   {
+    case "audible":
+    case "muted":
+      let tabPage = storage.getPage(tabId);
+      if (!tabPage)
+        return;
+
+      let wasAudible = audio.isAudible(tabPage);
+      audio.update(tabId, action, data);
+      let isAudible = audio.isAudible(tabPage);
+
+      // Start gathering attention immediately when audio starts playing
+      if (!wasAudible && isAudible)
+        return attention.start(tabId, {background: true});
+
+      // Stop gathering attention immediately when audio stops playing
+      if (wasAudible && !isAudible)
+        return attention.stop(tabId, {background: true});
+
+      return;
+    case "audible-ongoing":
+      return attention.start(tabId, {background: true});
     case "idle":
       switch (data)
       {
@@ -28,6 +50,7 @@ on("data", ({tabId, action, data}) =>
 
       // fall through
     case "removed":
+      audio.reset(tabId);
       return attention.stop(tabId).then(() => storage.removePage(tabId));
     case "selected":
       attention.select(tabId);
@@ -44,6 +67,7 @@ on("data", ({tabId, action, data}) =>
     case "title":
       return storage.updatePage(tabId, {title: data});
     case "url":
+      audio.reset(tabId);
       return storage.updatePage(tabId, {url: data});
     case "keypressed":
     case "pointerclicked":

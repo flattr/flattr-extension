@@ -37,7 +37,7 @@ function addAttention(tabId, url, addedAttention, isManual)
         page[property] += addedAttention;
         yield db.pages.update(page.url, {[property]: page[property]});
 
-        if (addedAttention >= getRemainingAttention(entity, oldAttention))
+        if (addedAttention >= getRemainingAttention(url, oldAttention))
         {
           yield flattrManager.submit({
             entity, tabId, url,
@@ -55,7 +55,7 @@ function addAttention(tabId, url, addedAttention, isManual)
       if (tabPage && tabPage.url == url)
       {
         tabPage.attention = attention;
-        emit("attentionlevel-changed", {attention, entity});
+        emit("attentionlevel-changed", {attention, url});
       }
 
       return attention;
@@ -73,8 +73,8 @@ function fastForward(tabId)
     return;
   }
 
-  let {attention, entity, url} = tabPage;
-  attention = getRemainingAttention(entity, attention);
+  let {attention, url} = tabPage;
+  attention = getRemainingAttention(url, attention);
   return addAttention(tabId, url, attention, true);
 }
 exports.fastForward = fastForward;
@@ -148,25 +148,61 @@ exports.removePage = removePage;
  * Update one or more tab page properties
  * @param {number} tabId
  * @param {Object} tabUpdate
- * @param {string} tabUpdate.title
- * @param {string} tabUpdate.url
+ * @param {boolean} [tabUpdate.isAudio]
+ * @param {string} [tabUpdate.title]
+ * @param {string} [tabUpdate.url]
  * @return {Promise}
  */
 function updatePage(tabId, tabUpdate)
 {
-  let {title, url} = tabUpdate;
+  let {url} = tabUpdate;
 
-  let oldTabPage = tabPages.get(tabId);
-  if (!("url" in tabUpdate) && oldTabPage)
+  let tabPage = {
+    attention: 0,
+    audible: false,
+    isAudio: false,
+    entity: null,
+    muted: false,
+    notification: null,
+    title: null,
+    url: null
+  };
+  tabPage = tabPages.get(tabId) || tabPage;
+
+  if (!("url" in tabUpdate))
   {
-    ({url} = oldTabPage);
+    ({url} = tabPage);
   }
 
   if (!url)
     return removePage(tabId);
 
-  let entity = getEntity(url);
-  let tabPage = {attention: 0, entity, title, url};
+  if ("url" in tabUpdate)
+  {
+    let entity = getEntity(url);
+
+    // Keep tab page notification around as long as domain doesn't change
+    if (tabPage.notification && entity != tabPage.entity)
+    {
+      tabPage.notification = null;
+    }
+
+    tabPage.attention = 0;
+    tabPage.entity = entity;
+    tabPage.isAudio = false;
+    tabPage.title = null;
+    tabPage.url = url;
+    delete tabUpdate.url;
+  }
+
+  for (let prop in tabUpdate)
+  {
+    if (!(prop in tabPage))
+      continue;
+
+    tabPage[prop] = tabUpdate[prop];
+  }
+
   // We need to set it here already to avoid a race condition
   tabPages.set(tabId, tabPage);
 
@@ -186,19 +222,20 @@ function updatePage(tabId, tabUpdate)
           if (!page)
           {
             return db.pages.add({
-              entity, title, url,
               attention: 0,
-              manualAttention: 0
+              entity: tabPage.entity,
+              isAudio: tabPage.isAudio,
+              manualAttention: 0,
+              title: tabPage.title,
+              url: tabPage.url
             });
           }
 
           tabPage.attention = page.attention + page.manualAttention;
+          tabPage.isAudio = tabUpdate.isAudio || page.isAudio;
+          tabPage.title = tabUpdate.title || page.title;
 
-          if (!page.title)
-          {
-            page.title = title;
-            yield db.pages.update(url, {title});
-          }
+          yield db.pages.update(url, tabUpdate);
         });
       });
 }

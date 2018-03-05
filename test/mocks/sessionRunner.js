@@ -2,7 +2,7 @@
 
 const requireInject = require("require-inject");
 
-const {expect} = require("../assert");
+const {expect, prepareExpectObject} = require("../assert");
 const {spawn} = require("../utils");
 
 const {Window} = require("../mocks/window");
@@ -10,6 +10,24 @@ const {localforage} = require("../mocks/localforage");
 
 const constants = require("../../src/lib/common/constants");
 const {STATUS_ENABLED} = constants;
+
+let expectPage = prepareExpectObject({
+  attention: 0,
+  entity: null,
+  isAudio: false,
+  manualAttention: 0,
+  title: null,
+  url: null
+});
+
+function expectPages(pages, expected)
+{
+  expect(pages.length).to.equal(expected.length);
+  for (let i = 0; i < pages.length; i++)
+  {
+    expectPage(pages[i], expected[i]);
+  }
+}
 
 function run({
   events,
@@ -38,9 +56,9 @@ function run({
   let intervals = new Set();
 
   fakeConstants.ALARM_INTERVAL_MS = 20000;
-  win.setTimeout = function(fn, delay)
+  win.setTimeout = function(fn, delay, ...args)
   {
-    let timeout = {fn, when: now + delay};
+    let timeout = {args, fn, when: now + delay};
     timeouts.add(timeout);
     return timeout;
   };
@@ -48,12 +66,11 @@ function run({
   {
     timeouts.delete(timeout);
   };
-  win.setInterval = function(fn, delay)
+  win.setInterval = function(fn, delay, ...args)
   {
     let interval = {
-      fn,
-      when: now + delay,
-      delay
+      args, delay, fn,
+      when: now + delay
     };
     intervals.add(interval);
     return interval;
@@ -128,7 +145,7 @@ function run({
 
       timeouts.delete(timeout);
 
-      yield timeout.fn();
+      yield timeout.fn(...timeout.args);
     }
 
     // handle setInterval usage
@@ -143,7 +160,7 @@ function run({
 
       interval.when += interval.delay;
 
-      yield interval.fn();
+      yield interval.fn(...interval.args);
     }
 
     if (somethingRan)
@@ -168,7 +185,7 @@ function run({
 
       let pages = yield sessionDb.pages.toArray();
 
-      expect(pages).to.deep.equal(expectedPages);
+      expectPages(pages, expectedPages);
       expect(submissions).to.deep.equal(expectedSubmissions);
     });
   }
@@ -179,6 +196,9 @@ function run({
     "../../src/lib/background/database/session": {db: sessionDb},
     "../../src/lib/common/env/chrome": {},
     "global/window": win,
+    "../../src/lib/common/account": {
+      isActive: () => Promise.resolve(true)
+    },
     "../../src/lib/common/events": emitter,
     "../../src/lib/common/constants": fakeConstants,
     "../../src/data/domains":

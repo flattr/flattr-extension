@@ -25,6 +25,10 @@ function transformURL(url)
 
 on("data", ({tabId, action, data, timestamp}) =>
 {
+  // No need to store any events that we can infer from other events
+  if (action.endsWith("-ongoing"))
+    return;
+
   let result = Promise.resolve();
   if (action == "state")
   {
@@ -35,6 +39,6 @@ on("data", ({tabId, action, data, timestamp}) =>
     result = transformURL(data).then((url) => data = url);
   }
 
-  result.then(() => db.push(tabId, action, data, timestamp))
+  return result.then(() => db.push(tabId, action, data, timestamp))
       .catch((err) => console.error(err));
 });
