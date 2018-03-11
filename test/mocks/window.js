@@ -23,9 +23,6 @@ function Window(defaults)
     return Promise.resolve({ok: true, status: 200});
   };
 
-  this.setInterval = setInterval.bind(this);
-  this.setTimeout = setTimeout.bind(this);
-
   this.localStorage = new Storage(localStorage);
 }
 Window.prototype = {
@@ -93,23 +90,23 @@ Window.prototype = {
     {
       this._listeners[name].delete(listener);
     }
+  },
+
+  setInterval(listener, timeout)
+  {
+    this.addEventListener("window-interval", listener);
+    return listener;
+  },
+
+  setTimeout(callback, timeout)
+  {
+    let listener = () =>
+    {
+      this.removeEventListener("window-timeout", listener);
+      callback();
+    };
+    this.addEventListener("window-timeout", listener);
+    return listener;
   }
 };
 exports.Window = Window;
-
-function setInterval(listener, timeout)
-{
-  this.addEventListener("window-interval", listener);
-  return listener;
-}
-
-function setTimeout(callback, timeout)
-{
-  let listener = () =>
-  {
-    this.removeEventListener("window-timeout", listener);
-    callback();
-  };
-  this.addEventListener("window-timeout", listener);
-  return listener;
-}

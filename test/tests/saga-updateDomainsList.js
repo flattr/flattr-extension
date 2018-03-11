@@ -18,9 +18,22 @@ const {
   REQUEST_DOMAINS_UPDATE_SUCCESS
 } = require("../../src/lib/background/state/types/domains");
 
+const {DOMAIN_LIST_UPDATE_INTERVAL} = require("../../src/lib/common/constants");
+
 const TEST_PATH = "../../src/lib/background/state/sagas/updateDomainsList";
 
 const DOMAINS_UPDATE = {status: {}, author: ["foo.com"]};
+
+let nextNowDate = undefined;
+class MockDate extends Date
+{
+  static now()
+  {
+    let next = nextNowDate;
+    nextNowDate = undefined;
+    return next || Date.now();
+  }
+}
 
 const makeTestModule = ({
   lastUpdated, lastModified,
@@ -33,7 +46,7 @@ const makeTestModule = ({
 
   const deps = {
     "global/window": {
-      Date,
+      Date: MockDate,
       fetch(url, options = {method: "GET"})
       {
         let {method} = options;
@@ -132,13 +145,18 @@ const makeSagaTester = () => new SagaTester({
 
 describe(`Test ${TEST_PATH}`, () =>
 {
-  beforeEach(removeAllDatabases);
-  after(removeAllDatabases);
-
-  it("watchForDomainUpdates handles one update at a time", () =>
+  afterEach(() =>
   {
-    const {updateDomains, watchForDomainUpdates, delay} = makeTestModule({});
-    let gen = watchForDomainUpdates();
+    nextNowDate = undefined;
+    return removeAllDatabases();
+  });
+
+  it("watchForDomainUpdateStart handles one update at a time", () =>
+  {
+    const {
+      updateDomains, watchForDomainUpdateStart, delay
+    } = makeTestModule({});
+    let gen = watchForDomainUpdateStart();
 
     assert.deepEqual(gen.next().value, take(REQUEST_DOMAINS_UPDATE));
 
@@ -151,10 +169,10 @@ describe(`Test ${TEST_PATH}`, () =>
 
   it("domains list update saga will check lastUpdated setting", () =>
   {
-    const {watchForDomainUpdates, settings} = makeTestModule({});
+    const {watchForDomainUpdateStart, settings} = makeTestModule({});
 
     const saga = makeSagaTester();
-    let task = saga.start(watchForDomainUpdates);
+    let task = saga.start(watchForDomainUpdateStart);
 
     return spawn(function*()
     {
@@ -177,12 +195,12 @@ describe(`Test ${TEST_PATH}`, () =>
   it("domains list update saga will check last-modified header", () =>
   {
     let lastModified = new Date();
-    const {fetchCount, watchForDomainUpdates, settings} = makeTestModule({
+    const {fetchCount, watchForDomainUpdateStart, settings} = makeTestModule({
       lastModified
     });
 
     const saga = makeSagaTester();
-    let task = saga.start(watchForDomainUpdates);
+    let task = saga.start(watchForDomainUpdateStart);
 
     return spawn(function*()
     {
@@ -201,10 +219,10 @@ describe(`Test ${TEST_PATH}`, () =>
 
   it("domains list update saga updates the database", () =>
   {
-    const {db, presets, watchForDomainUpdates} = makeTestModule({});
+    const {db, presets, watchForDomainUpdateStart} = makeTestModule({});
 
     const saga = makeSagaTester();
-    let task = saga.start(watchForDomainUpdates);
+    let task = saga.start(watchForDomainUpdateStart);
 
     return spawn(function*()
     {
@@ -234,12 +252,12 @@ describe(`Test ${TEST_PATH}`, () =>
 
   it("domains list update saga error handling", () =>
   {
-    const {fetchCount, watchForDomainUpdates} = makeTestModule({
+    const {fetchCount, watchForDomainUpdateStart} = makeTestModule({
       throwOnFirstFetch: true
     });
 
     const saga = makeSagaTester();
-    let task = saga.start(watchForDomainUpdates);
+    let task = saga.start(watchForDomainUpdateStart);
 
     return spawn(function*()
     {
@@ -263,10 +281,10 @@ describe(`Test ${TEST_PATH}`, () =>
 
   it("domains list update saga, handles one update at a time", () =>
   {
-    const {delay, fetchCount, watchForDomainUpdates} = makeTestModule({});
+    const {delay, fetchCount, watchForDomainUpdateStart} = makeTestModule({});
 
     const saga = makeSagaTester();
-    let task = saga.start(watchForDomainUpdates);
+    let task = saga.start(watchForDomainUpdateStart);
 
     return spawn(function*()
     {
@@ -290,5 +308,77 @@ describe(`Test ${TEST_PATH}`, () =>
 
       task.cancel();
     });
+  });
+
+  it("runUpdateDomains starts domain updates and waits for completion", () =>
+  {
+    const {
+      fetchCount, runUpdateDomains, watchForDomainUpdateStart
+    } = makeTestModule({});
+
+    const saga = makeSagaTester();
+    let task = saga.start(watchForDomainUpdateStart);
+
+    return spawn(function*()
+    {
+      let done = false;
+
+      let waitFor = saga.waitFor(REQUEST_DOMAINS_UPDATE_SUCCESS).then(() =>
+      {
+        done = true;
+      });
+
+      saga.start(runUpdateDomains);
+
+      yield waitFor;
+
+      assert.equal(done, true);
+
+      assert.equal(fetchCount["HEAD"], 1);
+      assert.equal(fetchCount["GET"], 1);
+
+      task.cancel();
+    });
+  });
+
+  it("domains list update alarm triggers immediately to start", () =>
+  {
+    const {
+      delay, runUpdateDomains, settings, watchForDomainUpdateAlarm
+    } = makeTestModule({});
+    let gen = watchForDomainUpdateAlarm();
+
+    assert.deepEqual(
+        gen.next().value,
+        call(settings.get, "domains.lastUpdated", 0));
+
+    assert.deepEqual(gen.next(0).value, call(delay, 0));
+
+    assert.deepEqual(gen.next().value, call(runUpdateDomains));
+
+    assert.deepEqual(gen.next().value, call(MockDate.now));
+  });
+
+  it("domains list update alarm waits proper amount of time", () =>
+  {
+    const {
+      delay, runUpdateDomains, settings, watchForDomainUpdateAlarm
+    } = makeTestModule({});
+    let gen = watchForDomainUpdateAlarm();
+
+    assert.deepEqual(
+        gen.next().value,
+        call(settings.get, "domains.lastUpdated", 0));
+
+    let now = Date.now();
+    nextNowDate = now;
+
+    assert.deepEqual(
+        gen.next(now).value,
+        call(delay, DOMAIN_LIST_UPDATE_INTERVAL));
+
+    assert.deepEqual(gen.next().value, call(runUpdateDomains));
+
+    assert.deepEqual(gen.next().value, call(MockDate.now));
   });
 });

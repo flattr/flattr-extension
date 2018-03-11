@@ -2,9 +2,10 @@
 
 const {applyMiddleware, createStore} = require("redux");
 const createSagaMiddleware = require("redux-saga").default;
+const {fork} = require("redux-saga/effects");
 
 const {rootReducer} = require("./reducers");
-const {mainSaga} = require("./sagas");
+const {sagas} = require("./sagas");
 
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [sagaMiddleware];
@@ -22,4 +23,7 @@ let store = createStore(
 );
 exports.store = store;
 
-sagaMiddleware.run(mainSaga);
+sagaMiddleware.run(function* ()
+{
+  yield sagas.map((saga) => fork(saga));
+});

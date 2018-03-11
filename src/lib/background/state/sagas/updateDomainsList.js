@@ -1,17 +1,19 @@
 "use strict";
 
-const {call, put, take} = require("redux-saga/effects");
+const {call, put, race, take} = require("redux-saga/effects");
 const {delay} = require("./utils");
 
 const {fetch, Date} = require("global/window");
 
 const {
+  DOMAIN_LIST_UPDATE_INTERVAL,
   FILES_DOMAINS_UPDATE
 } = require("../../../common/constants");
 const db = require("../../database/json");
 const presets = require("../../domains/status/preset");
 const {validateDomainsList} = require("../../domains/validate");
 const settings = require("../../../common/settings");
+const {getDomainsUpdate} = require("../actions/domains");
 
 const {
   REQUEST_DOMAINS_UPDATE,
@@ -50,7 +52,7 @@ function* updateDomains()
 }
 exports.updateDomains = updateDomains;
 
-function* watchForDomainUpdates()
+function* watchForDomainUpdateStart()
 {
   while (true)
   {
@@ -69,4 +71,33 @@ function* watchForDomainUpdates()
     }
   }
 }
-exports.watchForDomainUpdates = watchForDomainUpdates;
+exports.watchForDomainUpdateStart = watchForDomainUpdateStart;
+
+function* runUpdateDomains()
+{
+  yield put(getDomainsUpdate());
+
+  yield race({
+    failure: take(REQUEST_DOMAINS_UPDATE_FAILURE),
+    success: take(REQUEST_DOMAINS_UPDATE_SUCCESS)
+  });
+}
+exports.runUpdateDomains = runUpdateDomains;
+
+function* watchForDomainUpdateAlarm()
+{
+  let lastUpdated = yield call(settings.get, "domains.lastUpdated", 0);
+
+  while (true)
+  {
+    yield call(
+      delay,
+      Math.max(0, ((lastUpdated + DOMAIN_LIST_UPDATE_INTERVAL) - Date.now()))
+    );
+
+    yield call(runUpdateDomains);
+
+    lastUpdated = yield call(Date.now);
+  }
+}
+exports.watchForDomainUpdateAlarm = watchForDomainUpdateAlarm;

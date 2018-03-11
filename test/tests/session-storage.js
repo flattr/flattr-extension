@@ -5,6 +5,7 @@ const requireInject = require("require-inject");
 const {localforage} = require("../mocks/localforage");
 const {Window} = require("../mocks/window");
 const {removeAllDatabases} = require("../mocks/dexie");
+const chrome = require("sinon-chrome");
 
 const {expect} = require("../assert");
 const {spawn} = require("../utils");
@@ -40,7 +41,7 @@ function createMockStorage({presets})
     "../../src/data/domains": presets,
     "../../src/lib/background/database/flattrs": {db: flattrsDb},
     "../../src/lib/background/database/session": {db: sessionDb},
-    "../../src/lib/common/env/chrome": {chrome: {}},
+    "../../src/lib/common/env/chrome": {chrome},
     "global/window": win,
     "../../src/lib/background/server/api": {
       sendFlattrs: () => Promise.resolve({ok: true})

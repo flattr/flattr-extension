@@ -97,6 +97,7 @@ describe("Test stats processing", () =>
         "../../src/lib/common/account": {
           isActive: () => Promise.resolve(true)
         },
+        "../../src/lib/common/env/chrome": {chrome},
         "../../src/lib/common/utils": {},
         "../../src/lib/background/server/api":
         {
@@ -131,6 +132,7 @@ describe("Test stats processing", () =>
         "../../src/lib/common/account": {
           isActive: () => Promise.resolve(isActive)
         },
+        "../../src/lib/common/env/chrome": {chrome},
         "../../src/lib/common/utils": {},
         "../../src/lib/background/server/api":
         {
@@ -177,6 +179,7 @@ describe("Test stats processing", () =>
         "../../src/lib/common/account": {
           isActive: () => Promise.resolve(true)
         },
+        "../../src/lib/common/env/chrome": {chrome},
         "../../src/lib/background/server/api":
         {
           sendFlattrs: () => Promise.resolve({ok: true})
@@ -241,6 +244,7 @@ describe("Test stats processing", () =>
     requireInject("../../src/lib/background/stats", {
       localforage,
       "global/window": win,
+      "../../src/lib/common/env/chrome": {chrome},
       "../../src/lib/common/events": {
         on(name, listener)
         {

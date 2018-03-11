@@ -6,8 +6,8 @@ const {
   STATUS_BLOCKED,
   STATUS_UNDEFINED
 } = require("../../../common/constants");
+const settings = require("../../../common/settings");
 const db = require("../../database/json");
-const {startDomainsUpdate} = require("../task");
 
 const PRESETS = require("../../../../data/domains");
 
@@ -30,7 +30,6 @@ function refreshPresets()
   {
     if (!domains)
     {
-      startDomainsUpdate({reason: {db: true}});
       return;
     }
 
@@ -40,7 +39,14 @@ function refreshPresets()
 exports.refreshPresets = refreshPresets;
 
 // load any existing updates
-refreshPresets();
+settings.get("domains.lastUpdated", 0)
+  .then((lastUpdated) =>
+  {
+    if (lastUpdated > 0)
+    {
+      refreshPresets();
+    }
+  });
 
 function isAuthorDomain(domain)
 {

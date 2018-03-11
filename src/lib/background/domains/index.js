@@ -8,7 +8,6 @@ const {emit} = require("../../common/events");
 const {normalizeURL} = require("../../common/utils");
 const presetStatus = require("./status/preset");
 const userStatus = require("./status/user");
-require("./task").runTask();
 
 function getEntity(url)
 {
