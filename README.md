@@ -2,8 +2,7 @@
 
 [![Build Status][circleci-image]][circleci-url]
 
-A Flattr'ing web extension.
-
+Monetize your content effortlessly. https://flattr.com
 
 ## Development
 
