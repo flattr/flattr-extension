@@ -21,12 +21,18 @@
     "128": "icons/flattr-128x128-default.png"
   },
   "background": {
-    "scripts": ["lib/background/index.js"]
+    "scripts": [
+      "lib/common.js",
+      "lib/background/index.js"
+    ]
   },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["lib/content/index.js"],
+      "js": [
+        "lib/common.js",
+        "lib/content/index.js"
+      ],
       "run_at": "document_start"
     }
   ],
