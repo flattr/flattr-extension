@@ -45,6 +45,7 @@ describe("Test domain checks", () =>
             "c1": 30,
             "c2": {
               "/foo": 31,
+              "/foo/bar": 40,
               "": 32,
               "*": 33
             },
@@ -99,6 +100,16 @@ describe("Test domain checks", () =>
     return Promise.all([
       checkURL(["http://c2.b1.a1/foo", 31, 31, UNDEFINED]),
       checkURL(["http://c2.b1.a1/bar", 32, 32, UNDEFINED])
+    ]);
+  });
+
+  it("Should match only first part of pathname", () =>
+  {
+    return Promise.all([
+      checkURL(["http://c2.b1.a1/", 32, 32, UNDEFINED]),
+      checkURL(["http://c2.b1.a1/foo", 31, 31, UNDEFINED]),
+      checkURL(["http://c2.b1.a1/foobar", 32, 32, UNDEFINED]),
+      checkURL(["http://c2.b1.a1/foo/bar", 31, 31, UNDEFINED])
     ]);
   });
 

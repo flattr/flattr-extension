@@ -69,9 +69,13 @@ function get({domain, url})
   if (treeNodes.length == hostParts.length)
   {
     // Does tree node define status of given path?
-    value = treeNode[pathname];
-    if (typeof value == "number")
-      return value;
+    if (pathname)
+    {
+      let [pathStart] = /^\/[^/]*/.exec(pathname);
+      value = treeNode[pathStart];
+      if (typeof value == "number")
+        return value;
+    }
 
     // Does tree node define a status for all paths?
     value = treeNode[""];
