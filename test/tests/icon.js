@@ -44,7 +44,7 @@ function run(expectedState, expectedOptions, options)
     "../../src/lib/common/env/chrome": {chrome},
     "../../src/lib/common/account": {
       hasSubscription: () => Promise.resolve(subscribed),
-      isAuthenticated: () => Promise.resolve(authenticated)
+      isActive: () => Promise.resolve(authenticated)
     },
     "../../src/lib/common/events":
     {
@@ -116,7 +116,7 @@ describe("Test browserAction icon", () =>
   it("Disabled (invalid page)", () => run("disabled", {}, {page: undefined}));
 
   it("Disabled (non-authenticated)", () =>
-      run("disabled", {}, {authenticated: false}));
+      run("error", {text: "!"}, {authenticated: false}));
 
   it("Disabled (private tab)", () => run("disabled", {}, {incognito: true}));
 
