@@ -9,7 +9,29 @@ const {
 const presets = require("../../../../data/domains");
 
 /**
- * Resolve flattr status for given URL or domain
+ * Retrieve only tree nodes which are relevant to the given host
+ * @param {string[]} hostParts - host parts (e.g. ["example", "com"])
+ * @return {any[]} tree nodes corresponding to given host parts
+ */
+function filterTree(hostParts)
+{
+  let treeNodes = [];
+  let tree = presets.status;
+
+  for (let hostPart, i = hostParts.length - 1; hostPart = hostParts[i]; i--)
+  {
+    tree = tree[hostPart];
+    if (typeof tree == "undefined")
+      break;
+
+    treeNodes.unshift(tree);
+  }
+
+  return treeNodes;
+}
+
+/**
+ * Resolve flattr status for given domain or URL
  * @param {Object} options
  * @param {string} [options.domain]
  * @param {string} [options.url]
@@ -17,6 +39,7 @@ const presets = require("../../../../data/domains");
  */
 function get({domain, url})
 {
+  // Determine what to search for
   let hostname = null;
   let pathname = null;
   if (url)
@@ -30,50 +53,44 @@ function get({domain, url})
   else
     return STATUS_UNDEFINED;
 
-  let hostParts = hostname.split(".").reverse();
+  let hostParts = hostname.split(".");
+  let treeNodes = filterTree(hostParts);
 
-  let tree = presets.status;
-  let value = null;
-  for (let hostPart of hostParts)
+  // Does most specific tree node only define a status? In that case
+  // we won't find anything more specific
+  let treeNode = treeNodes[0];
+  let value = treeNode;
+  if (typeof value == "number")
+    return value;
+
+  // Check tree node which exactly matches given host
+  if (treeNodes.length == hostParts.length)
   {
-    if (hostPart in tree)
+    // Does tree node define status of given path?
+    if (pathname)
     {
-      // Check status for given domain
-      value = tree[hostPart];
+      let [pathStart] = /^\/[^/]*/.exec(pathname);
+      value = treeNode[pathStart];
       if (typeof value == "number")
         return value;
-
-      tree = value;
-      continue;
     }
 
-    // Check status for all domains
-    value = tree["*"];
+    // Does tree node define a status for all paths?
+    value = treeNode[""];
     if (typeof value == "number")
       return value;
-
-    return STATUS_UNDEFINED;
   }
 
-  if (pathname)
+  // Check tree nodes from most to least specific
+  for (treeNode of treeNodes)
   {
-    // Check status for given path
-    let [pathStart] = /^\/[^/]*/.exec(pathname);
-    value = tree[pathStart];
+    // Does tree node define a status for host and its subdomains?
+    value = treeNode["*"];
     if (typeof value == "number")
       return value;
   }
 
-  // Check status for all paths
-  value = tree[""];
-  if (typeof value == "number")
-    return value;
-
-  // Check status for all domains
-  value = tree["*"];
-  if (typeof value == "number")
-    return value;
-
+  // We couldn't find any status
   return STATUS_UNDEFINED;
 }
 exports.get = get;
