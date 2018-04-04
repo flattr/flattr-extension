@@ -17,18 +17,16 @@ function filterTree(hostParts)
 {
   let treeNodes = [];
   let tree = presets.status;
-  hostParts = hostParts.slice().reverse();
 
-  for (let hostPart of hostParts)
+  for (let hostPart, i = hostParts.length - 1; hostPart = hostParts[i]; i--)
   {
     tree = tree[hostPart];
     if (typeof tree == "undefined")
       break;
 
-    treeNodes.push(tree);
+    treeNodes.unshift(tree);
   }
 
-  treeNodes.reverse();
   return treeNodes;
 }
 
