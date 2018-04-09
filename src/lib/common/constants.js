@@ -46,6 +46,18 @@ exports.API_RETRY_DELAY_MS = [
   3840000 // 01h:04m:00s
 ];
 
+exports.ATTENTION_AUDIO_INTERVAL_SYM = Symbol("Audio attention interval");
+exports.ATTENTION_AUDIO_THRESHOLDS = [
+  140, // 00h:02m:20s
+  400, // 00h:06m:40s
+  880, // 00h:14m:40s
+  1480, // 00h:24m:40s
+  2460, // 00h:41m:00s
+  3660 // 01h:01m:00s
+];
+exports.ATTENTION_AUDIO_TIMEOUT = 20000; // 00h:00:20s
+exports.ATTENTION_AUDIO_TIMEOUT_SYM = Symbol("Audio attention timeout");
+
 exports.ATTENTION_DURATION = 15; // 00:00:15
 exports.ATTENTION_LAST_THRESHOLD = 86400; // 24:00:00
 exports.ATTENTION_THRESHOLDS = [
@@ -54,15 +66,6 @@ exports.ATTENTION_THRESHOLDS = [
   138, // 00:02:18
   176, // 00:02:56
   210 // 00:03:30
-];
-exports.ATTENTION_THRESHOLDS_VIDEO = [
-  50, // 00:00:50
-  105, // 00:01:45
-  165, // 00:02:45
-  230, // 00:03:50
-  300, // 00:05:00
-  375, // 00:06:15
-  455 // 00:07:35
 ];
 exports.IDLE_INTERVAL = 60; // 00:01:00
 exports.STATUS_UNDEFINED = 0;

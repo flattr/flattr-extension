@@ -78,7 +78,7 @@ ipc.on("tabinfo-get", ({sendResponse}) =>
         let start = getTimestamp(DAY_START);
 
         return Promise.all([
-          entity,
+          entity, url,
           flattrManager.query({entity, start, flattrs: true}),
           getStatus({domain: entity}),
           getStatus({url}),
@@ -86,7 +86,7 @@ ipc.on("tabinfo-get", ({sendResponse}) =>
           storage.getPage(id).notification || null
         ]);
       })
-      .then(([entity, {flattrs}, statusEntity, statusUrl, attention,
+      .then(([entity, tabUrl, {flattrs}, statusEntity, statusUrl, attention,
           notification]) =>
       {
         flattrs = flattrs.map(({timestamps, title, url}) =>
@@ -98,7 +98,7 @@ ipc.on("tabinfo-get", ({sendResponse}) =>
         });
 
         sendResponse({
-          attention: getAttentionProgress(entity, attention),
+          attention: getAttentionProgress(tabUrl, attention),
           entity, flattrs, notification,
           hasAuthors: hasDomainAuthors(entity),
           status: {
@@ -242,9 +242,9 @@ function onExtensionInfoChanged()
   });
 }
 
-on("attentionlevel-changed", ({attention, entity}) =>
+on("attentionlevel-changed", ({attention, url}) =>
 {
-  ipc.send("attentionlevel-changed", getAttentionProgress(entity, attention));
+  ipc.send("attentionlevel-changed", getAttentionProgress(url, attention));
 });
 
 on("data", ({tabId, action}) =>

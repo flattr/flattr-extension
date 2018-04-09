@@ -3,7 +3,7 @@
 const requireInject = require("require-inject");
 const chrome = require("sinon-chrome");
 
-const {assert, expect, expectFromList, match} = require("../assert");
+const {assert, expect, match} = require("../assert");
 const {removeAllDatabases} = require("../mocks/dexie");
 const {localforage} = require("../mocks/localforage");
 const {Settings} = require("../mocks/settings");
@@ -213,14 +213,16 @@ describe("Test stats processing", () =>
 
   it("Should transform data before storage", (done) =>
   {
-    let events = [
+    let input = [
       [1, "state", {url: "http://foo.com/"}],
       [1, "url", "http://foo.com/"],
       [1, "foo", "http://foo.com/"],
       [1, "foo", {url: "http://foo.com/"}],
+      [1, "foo-ongoing", null],
       [1, "bar", "baz"],
       [1, "url", null]
     ];
+    let output = [];
     let expecting = [
       [1, "state", {
         url: {
@@ -251,10 +253,23 @@ describe("Test stats processing", () =>
           if (name != "data")
             return;
 
-          for (let [tabId, action, data] of events)
+          spawn(function*()
           {
-            listener({tabId, action, data});
-          }
+            try
+            {
+              for (let [tabId, action, data] of input)
+              {
+                yield listener({tabId, action, data});
+              }
+
+              expect(output).to.deep.equal(expecting);
+              done();
+            }
+            catch (ex)
+            {
+              done(ex);
+            }
+          });
         }
       },
       "../../src/lib/common/utils": {},
@@ -264,7 +279,7 @@ describe("Test stats processing", () =>
       "../../src/lib/background/stats/db": {
         push(tabId, action, data)
         {
-          expectFromList([tabId, action, data], {done, expecting});
+          output.push([tabId, action, data]);
           return Promise.resolve();
         }
       }

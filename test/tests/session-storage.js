@@ -7,7 +7,7 @@ const {Window} = require("../mocks/window");
 const {removeAllDatabases} = require("../mocks/dexie");
 const chrome = require("sinon-chrome");
 
-const {expect} = require("../assert");
+const {expect, prepareExpectObject} = require("../assert");
 const {spawn} = require("../utils");
 
 const {
@@ -15,6 +15,35 @@ const {
   STATUS_ENABLED
 } = require("../../src/lib/common/constants");
 const MOCK_ENTITY = "example.com";
+
+let expectTabPage = prepareExpectObject({
+  attention: 0,
+  audible: false,
+  entity: null,
+  isAudio: false,
+  muted: false,
+  notification: null,
+  title: null,
+  url: null
+});
+
+let expectPage = prepareExpectObject({
+  attention: 0,
+  entity: null,
+  isAudio: false,
+  manualAttention: 0,
+  title: null,
+  url: null
+});
+
+function expectPages(pages, expected)
+{
+  expect(pages.length).to.equal(expected.length);
+  for (let i = 0; i < pages.length; i++)
+  {
+    expectPage(pages[i], expected[i]);
+  }
+}
 
 function createMockStorage({presets})
 {
@@ -109,39 +138,82 @@ describe("Test session storage", () =>
       expect(getPage(1)).to.equal(undefined);
 
       yield updatePage(1, {url: `${mockUrl}a`});
-      expect(getPage(1)).to.deep.equal({
-        attention: 0,
+      expectTabPage(getPage(1), {
         entity: mockEntity,
-        title: undefined,
         url: `${mockUrl}a`
       });
 
       yield updatePage(1, {title: "A"});
-      expect(getPage(1)).to.deep.equal({
-        attention: 0,
+      expectTabPage(getPage(1), {
         entity: mockEntity,
         title: "A",
         url: `${mockUrl}a`
       });
 
       yield updatePage(1, {title: "AA"});
-      expect(getPage(1)).to.deep.equal({
-        attention: 0,
+      expectTabPage(getPage(1), {
         entity: mockEntity,
         title: "AA",
         url: `${mockUrl}a`
       });
 
-      yield updatePage(1, {url: `${mockUrl}aa`});
-      expect(getPage(1)).to.deep.equal({
-        attention: 0,
+      yield updatePage(1, {isAudio: true});
+      expectTabPage(getPage(1), {
         entity: mockEntity,
-        title: undefined,
+        isAudio: true,
+        title: "AA",
+        url: `${mockUrl}a`
+      });
+
+      yield updatePage(1, {url: `${mockUrl}aa`});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
         url: `${mockUrl}aa`
       });
 
       yield updatePage(1, {url: undefined});
       expect(getPage(1)).to.equal(undefined);
+    });
+  });
+
+  it("Should restore page properties", () =>
+  {
+    const {
+      storage: {getPage, updatePage}
+    } = createMockStorage({
+      presets: {
+        author: [],
+        status: mockStatus
+      }
+    });
+
+    return spawn(function*()
+    {
+      yield updatePage(1, {url: `${mockUrl}a`});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
+        url: `${mockUrl}a`
+      });
+
+      yield updatePage(1, {title: "A"});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
+        title: "A",
+        url: `${mockUrl}a`
+      });
+
+      yield updatePage(1, {url: `${mockUrl}aa`});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
+        url: `${mockUrl}aa`
+      });
+
+      yield updatePage(1, {url: `${mockUrl}a`});
+      expectTabPage(getPage(1), {
+        entity: mockEntity,
+        title: "A",
+        url: `${mockUrl}a`
+      });
     });
   });
 
@@ -168,7 +240,7 @@ describe("Test session storage", () =>
       yield updatePage(1, {title: "A", url: `${mockUrl}a`});
       yield addAttention(1, `${mockUrl}a`, 11);
 
-      expect(getPage(1)).to.deep.equal({
+      expectTabPage(getPage(1), {
         attention: 11,
         entity: mockEntity,
         title: "A",
@@ -178,7 +250,7 @@ describe("Test session storage", () =>
       yield updatePage(1, {title: "AA", url: `${mockUrl}aa`});
       yield addAttention(1, `${mockUrl}aa`, 22);
 
-      expect(getPage(1)).to.deep.equal({
+      expectTabPage(getPage(1), {
         attention: 22,
         entity: mockEntity,
         title: "AA",
@@ -190,40 +262,33 @@ describe("Test session storage", () =>
       yield removePage(2);
 
       expect(getPage(2)).to.equal(undefined);
-      expect(getPage(3)).to.deep.equal({
-        attention: 0,
+      expectTabPage(getPage(3), {
         entity: mockEntity,
         title: "C",
         url: `${mockUrl}c`
       });
 
       let pages = yield sessionDb.pages.toArray();
-      expect(pages).to.deep.equal([
+      expectPages(pages, [
         {
           attention: 11,
           entity: mockEntity,
-          manualAttention: 0,
           title: "A",
           url: `${mockUrl}a`
         },
         {
           attention: 22,
           entity: mockEntity,
-          manualAttention: 0,
           title: "AA",
           url: `${mockUrl}aa`
         },
         {
-          attention: 0,
           entity: mockEntity,
-          manualAttention: 0,
           title: "B",
           url: `${mockUrl}b`
         },
         {
-          attention: 0,
           entity: mockEntity,
-          manualAttention: 0,
           title: "C",
           url: `${mockUrl}c`
         }
@@ -305,13 +370,13 @@ describe("Test session storage", () =>
       yield updatePage(1, {title: "FOO", url});
       yield addAttention(1, url, attention);
 
-      expect(getPage(1)).to.deep.equal({attention, entity, title, url});
+      expectTabPage(getPage(1), {attention, entity, title, url});
 
       yield fastForward(1);
 
       expect(ATTENTION_THRESHOLDS[0]).to.be.at.least(attention);
       let pages = yield sessionDb.pages.toArray();
-      expect(pages).to.deep.equal([{
+      expectPages(pages, [{
         attention, entity, title, url,
         manualAttention: ATTENTION_THRESHOLDS[0] - attention
       }]);

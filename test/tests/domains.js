@@ -5,7 +5,6 @@ const {expect} = require("chai");
 
 const {Window} = require("../mocks/window");
 const {
-  STATUS_BLOCKED: BLOCKED,
   STATUS_DISABLED: DISABLED,
   STATUS_ENABLED: ENABLED,
   STATUS_UNDEFINED: UNDEFINED
@@ -43,26 +42,22 @@ describe("Test domain checks", () =>
     },
     "../../src/data/domains": {
       status: {
-        com: {
-          "blocked-default": BLOCKED,
-          "enabled-default": ENABLED,
-          "foo": {
-            "": DISABLED,
-            "about": DISABLED,
-            "www": {
-              "*": DISABLED,
-              "/news": ENABLED
+        a1: {
+          "b1": {
+            "c1": 30,
+            "c2": {
+              "/foo": 31,
+              "/foo/bar": 40,
+              "": 32,
+              "*": 33
             },
-            "*": ENABLED
+            "/bar": 21,
+            "*": 22
           },
-          "bar": {
-            www: {
-              "": ENABLED,
-              "/": DISABLED,
-              "/about": DISABLED
-            }
-          },
-          "baz": BLOCKED
+          "*": 12
+        },
+        com: {
+          "enabled-default": ENABLED
         }
       }
     },
@@ -126,45 +121,37 @@ describe("Test domain checks", () =>
         });
   }
 
-  it("Should return the correct status for entity", () =>
-  {
-    let tests = [
-      ["enabled-default.com", ENABLED, ENABLED, UNDEFINED],
-      ["enabled-user.com", ENABLED, UNDEFINED, ENABLED],
-      ["disabled-default.com", DISABLED, UNDEFINED, UNDEFINED],
-      ["disabled-user.com", DISABLED, UNDEFINED, DISABLED],
-      ["foo.enabled-default.com", ENABLED, ENABLED, UNDEFINED],
-      ["foo.enabled-user.com", ENABLED, UNDEFINED, ENABLED],
-      ["foo.disabled-default.com", DISABLED, UNDEFINED, UNDEFINED],
-      ["foo.disabled-user.com", DISABLED, UNDEFINED, DISABLED],
-      ["blocked-default.com", BLOCKED, BLOCKED, UNDEFINED],
-      ["www.bar.com", ENABLED, ENABLED, UNDEFINED]
-    ];
+  it("Should use host value", () =>
+    checkEntity(["c1.b1.a1", 30, 30, UNDEFINED]));
 
-    return Promise.all(tests.map(checkEntity));
+  it("Should use pathname value", () =>
+  {
+    return Promise.all([
+      checkURL(["http://c2.b1.a1/foo", 31, 31, UNDEFINED]),
+      checkURL(["http://c2.b1.a1/bar", 32, 32, UNDEFINED])
+    ]);
   });
 
-  it("Should return the correct status for URL", () =>
+  it("Should match only first part of pathname", () =>
   {
-    let tests = [
-      ["http://enabled-default.com/", ENABLED, ENABLED, UNDEFINED],
-      [invalidUrl, BLOCKED, UNDEFINED, UNDEFINED],
-      ["http://foo.com/", DISABLED, DISABLED, UNDEFINED],
-      ["http://www.foo.com/", DISABLED, DISABLED, UNDEFINED],
-      ["http://vvv.foo.com/", ENABLED, ENABLED, UNDEFINED],
-      ["http://vvv.www.foo.com/", DISABLED, DISABLED, UNDEFINED],
-      ["http://about.foo.com/", DISABLED, DISABLED, UNDEFINED],
-      ["http://www.foo.com/news", ENABLED, ENABLED, UNDEFINED],
-      ["http://www.foo.com/news/", ENABLED, ENABLED, UNDEFINED],
-      ["http://bar.com/", DISABLED, UNDEFINED, UNDEFINED],
-      ["http://www.bar.com/", DISABLED, DISABLED, UNDEFINED],
-      ["http://www.bar.com/bar", ENABLED, ENABLED, UNDEFINED],
-      ["http://www.bar.com/about", DISABLED, DISABLED, UNDEFINED],
-      ["http://baz.com/", BLOCKED, BLOCKED, UNDEFINED]
-    ];
-
-    return Promise.all(tests.map(checkURL));
+    return Promise.all([
+      checkURL(["http://c2.b1.a1/", 32, 32, UNDEFINED]),
+      checkURL(["http://c2.b1.a1/foo", 31, 31, UNDEFINED]),
+      checkURL(["http://c2.b1.a1/foobar", 32, 32, UNDEFINED]),
+      checkURL(["http://c2.b1.a1/foo/bar", 31, 31, UNDEFINED])
+    ]);
   });
+
+  it("Should use \"\" value", () =>
+    checkEntity(["c2.b1.a1", 32, 32, UNDEFINED]));
+
+  it("Should use \"*\" value", () => checkEntity(["b1.a1", 22, 22, UNDEFINED]));
+
+  it("Should use parent host's \"*\" value", () =>
+    checkEntity(["d1.c2.b1.a1", 33, 33, UNDEFINED]));
+
+  it("Should return undefined if no matching host or parent host", () =>
+    checkEntity(["z1.y1.x1", DISABLED, UNDEFINED, UNDEFINED]));
 
   it("Should consider user changes", () =>
   {
@@ -175,7 +162,7 @@ describe("Test domain checks", () =>
         .then(() => domains.setEntityStatus(disabled, DISABLED))
         .then(() => checkEntity([disabled, DISABLED, UNDEFINED, DISABLED]));
 
-    let enabled = "enabled-default.com";
+    const enabled = "enabled-default.com";
     let testEnabled = checkEntity([enabled, ENABLED, ENABLED, UNDEFINED])
         .then(() => domains.setEntityStatus(enabled, DISABLED))
         .then(() => checkEntity([enabled, DISABLED, ENABLED, DISABLED]))

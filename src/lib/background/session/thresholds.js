@@ -1,17 +1,22 @@
 "use strict";
 
-const {ATTENTION_LAST_THRESHOLD, ATTENTION_THRESHOLDS,
-    ATTENTION_THRESHOLDS_VIDEO} = require("../../common/constants");
-const {hasDomainVideos} = require("../domains");
+const {
+  ATTENTION_AUDIO_THRESHOLDS,
+  ATTENTION_LAST_THRESHOLD,
+  ATTENTION_THRESHOLDS
+} = require("../../common/constants");
+const tabPages = require("../tabPages");
 
 const MAX_ATTENTION = ATTENTION_LAST_THRESHOLD * 10000;
 
-function* getThresholds(entity)
+function* getThresholds(url)
 {
   let thresholds = ATTENTION_THRESHOLDS;
-  if (hasDomainVideos(entity))
+
+  let tabPage = tabPages.getByUrl(url);
+  if (tabPage && tabPage.isAudio)
   {
-    thresholds = ATTENTION_THRESHOLDS_VIDEO;
+    thresholds = ATTENTION_AUDIO_THRESHOLDS;
   }
   for (let threshold of thresholds)
   {
@@ -28,7 +33,7 @@ function* getThresholds(entity)
 
 function validate(fn)
 {
-  return (entity, attention) =>
+  return (url, attention) =>
   {
     if (typeof attention != "number" || Number.isNaN(attention))
       throw new TypeError("Attention is not a number");
@@ -36,14 +41,14 @@ function validate(fn)
     if (attention > MAX_ATTENTION)
       throw new RangeError("Attention is too large");
 
-    return fn(entity, attention);
+    return fn(url, attention);
   };
 }
 
-function getAttentionProgress(entity, attention)
+function getAttentionProgress(url, attention)
 {
   let previous = 0;
-  for (let threshold of getThresholds(entity))
+  for (let threshold of getThresholds(url))
   {
     if (attention < threshold)
       return (attention - previous) / (threshold - previous);
@@ -53,9 +58,9 @@ function getAttentionProgress(entity, attention)
 }
 exports.getAttentionProgress = validate(getAttentionProgress);
 
-function getRemainingAttention(entity, attention)
+function getRemainingAttention(url, attention)
 {
-  for (let threshold of getThresholds(entity))
+  for (let threshold of getThresholds(url))
   {
     if (attention < threshold)
       return threshold - attention;

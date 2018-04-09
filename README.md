@@ -1,9 +1,8 @@
-# Flattr Extension
+# Flattr extension
 
 [![Build Status][circleci-image]][circleci-url]
 
-A Flattr'ing web extension.
-
+Monetize your content effortlessly. https://flattr.com
 
 ## Development
 
@@ -21,23 +20,23 @@ the `devenv` subdirectory of the directory where this repository is cloned to.
 
 Use `npm run debug` to bundle the extension with source maps for local testing.
 
-#### Google Chrome
+#### Chrome
 
-To use the extension created above in Google Chrome, follow these steps:
+To use the extension created above in Chrome, follow these steps:
 
-1) Open Google Chrome
-2) Go to `chrome://extensions/`
-3) Check "Developer mode" at the top right
-4) Click the "Load unpacked extension..." button that was revealed by step 3.
+1) Open Chrome.
+2) Go to `chrome://extensions/`.
+3) Select the check box labeled **Developer mode** in the upper-right corner.
+4) Click **Load unpacked extension**.
 5) Select the `devenv` subdirectory of the directory where you cloned this repository.
 
 #### Firefox
 
 To use the extension created above in Firefox, follow these steps:
 
-1) Open Firefox
-2) Go to `about:debugging#addons`
-3) Click the "Load Temporary Add-on" button.
+1) Open Firefox.
+2) Go to `about:debugging#addons`.
+3) Click **Load Temporary Add-on**.
 4) Select the `devenv` subdirectory of the directory where you cloned this repository.
 
 ### Watching
@@ -47,8 +46,8 @@ automatically bundle the changes to `devenv` directory.
 
 ### Building
 
-When building this extension, it is first bundled, then finally a `.zip` file
-will be created.
+When building this extension, it is first bundled, then a `.zip` file
+is created.
 
 Use `npm run build` to build the extension. You can specify which build to
 create by supplying the `FP_BUILD_TYPE` environment variable
@@ -56,7 +55,7 @@ create by supplying the `FP_BUILD_TYPE` environment variable
 
 ### Building for Firefox
 
-The extension works as-is in recent versions of Firefox. However, in order to
+The extension works as-is on recent versions of Firefox. However, in order to
 have it signed on addons.mozilla.org, a special build is currently needed. You
 can create it by setting the `FP_BUILD_TARGET` environment variable, i.e.:
 

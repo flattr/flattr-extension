@@ -10,17 +10,17 @@ const T3 = 900; // 00:15:00
 const T4 = 2700; // 00:45:00
 const TN = 86400; // 24:00:00
 const V1 = 200; // 00:03:20
-const videoDomain = "video.com";
+const videoUrl = "http://foo.com/video";
 
 const {getAttentionProgress, getRemainingAttention} =
     requireInject("../../src/lib/background/session/thresholds", {
       "../../src/lib/common/constants": {
         ATTENTION_LAST_THRESHOLD: TN,
         ATTENTION_THRESHOLDS: [T1, T2, T3, T4],
-        ATTENTION_THRESHOLDS_VIDEO: [V1]
+        ATTENTION_AUDIO_THRESHOLDS: [V1]
       },
-      "../../src/lib/background/domains": {
-        hasDomainVideos: (entity) => entity == videoDomain
+      "../../src/lib/background/tabPages": {
+        getByUrl: (url) => ({isAudio: url == videoUrl})
       }
     });
 
@@ -63,17 +63,17 @@ describe("Test Flattr attention thresholds", () =>
     }
   });
 
-  it("Should use different thresholds depending on domain", () =>
+  it("Should use different thresholds depending on URL", () =>
   {
     let expected = [
       [null, T1],
-      ["foo.com", T1],
-      [videoDomain, V1]
+      ["http://foo.com/bar", T1],
+      [videoUrl, V1]
     ];
 
-    for (let [domain, threshold] of expected)
+    for (let [url, threshold] of expected)
     {
-      expect(getRemainingAttention(domain, 10)).to.equal(threshold - 10);
+      expect(getRemainingAttention(url, 10)).to.equal(threshold - 10);
     }
   });
 });

@@ -87,11 +87,13 @@ function updateIcon(tabId)
     state: "disabled"
   };
 
-  account.isAuthenticated()
-    .then((isAuthenticated) =>
+  account.isActive()
+    .then((isActive) =>
     {
-      if (!isAuthenticated)
+      if (!isActive)
       {
+        tabIcon.state = "error";
+        tabIcon.text = "!";
         setIconState(tabIcon);
         return;
       }

@@ -7,7 +7,8 @@ const storage = require("./storage");
 
 const ATTENTION_DURATION_TIMEOUT = ATTENTION_DURATION * 1000;
 
-let active = null;
+let tabTimers = new Map();
+let foregroundTimer = null;
 let selectedTabId = null;
 
 function select(tabId)
@@ -16,51 +17,105 @@ function select(tabId)
 }
 exports.select = select;
 
-function stopAttention(tabId, shouldResumeAfter)
+/**
+ * Stop or interrupt attention gathering for tab with given ID
+ * @param {number} [tabId]
+ * @param {Object} [options]
+ * @param {boolean} [options.background=false] - whether to consider tab as
+ *                                               background tab
+ * @param {boolean} [options.resumable=false] - whether attention gathering
+ *                                              should resume right away
+ * @return {Promise}
+ */
+function stop(tabId, options = {})
 {
-  if (!active)
+  let {background = false, resumable = false} = options;
+
+  let activeTimer = tabTimers.get(tabId);
+  if (!activeTimer && !background)
+  {
+    activeTimer = foregroundTimer;
+  }
+  if (!activeTimer)
     return Promise.resolve();
 
   let now = Date.now();
-  let {started, timer, url} = active;
-  tabId = (typeof tabId != "number") ? active.tabId : tabId;
+  let {started, timer, url} = activeTimer;
 
-  if (shouldResumeAfter)
+  if (resumable)
   {
-    active.started = now;
+    activeTimer.started = now;
   }
   else
   {
     window.clearTimeout(timer);
-    active = null;
+    tabTimers.delete(tabId);
+
+    if (foregroundTimer && tabId == foregroundTimer.tabId)
+    {
+      foregroundTimer = null;
+    }
   }
 
   let attention = (now - started) / 1000;
   return storage.addAttention(tabId, url, attention, false);
 }
+exports.stop = stop;
 
-exports.stop = (tabId) => stopAttention(tabId);
-exports.interrupt = (tabId) => stopAttention(tabId, true);
+exports.interrupt = (tabId) => stop(tabId, {resumable: true});
 
-function start(tabId)
+/**
+ * Start attention gathering for tab with given ID
+ * @param {number} tabId
+ * @param {Object} [options]
+ * @param {boolean} [options.background=false] - whether to consider tab as
+ *                                               background tab
+ * @return {Promise}
+ */
+function start(tabId, options = {})
 {
+  let {background = false} = options;
   let started = Date.now();
 
-  return stopAttention().then(() =>
+  // Stop attention gathering for given tab or currently active foreground tab
+  let activeTimer = tabTimers.get(tabId);
+  if (!activeTimer && !background)
   {
-    let page = storage.getPage(tabId);
-    if (tabId != selectedTabId || !page || !page.url)
-      return;
+    activeTimer = foregroundTimer;
+  }
 
-    let timer = window.setTimeout(
-      stopAttention,
-      ATTENTION_DURATION_TIMEOUT,
-      tabId
-    );
-    active = {
-      started, tabId, timer,
-      url: page.url
-    };
-  });
+  let stopping = Promise.resolve();
+  if (activeTimer)
+  {
+    stopping = stop(activeTimer.tabId, options);
+  }
+
+  return stopping
+    .then(() =>
+    {
+      // Ignore foreground events if tab is not selected
+      if (!background && tabId != selectedTabId)
+        return;
+
+      // Start attention gathering
+      let tabPage = storage.getPage(tabId);
+      if (!tabPage || !tabPage.url)
+        return;
+
+      let timer = window.setTimeout(
+        stop, ATTENTION_DURATION_TIMEOUT,
+        tabId, options
+      );
+      let newTimer = {
+        started, tabId, timer,
+        url: tabPage.url
+      };
+
+      tabTimers.set(tabId, newTimer);
+      if (!background)
+      {
+        foregroundTimer = newTimer;
+      }
+    });
 }
 exports.start = start;

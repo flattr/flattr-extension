@@ -66,18 +66,6 @@ function hasAuthors(domain)
 }
 exports.hasDomainAuthors = hasAuthors;
 
-/**
- * Determine whether a given domain is known for containing videos
- * @param {string} domain
- * @return {boolean}
- */
-function hasVideos(domain)
-{
-  domain = tld.getDomain(domain);
-  return presetStatus.hasVideos(domain);
-}
-exports.hasDomainVideos = hasVideos;
-
 function setStatus(entity, status)
 {
   return userStatus.setDisabled(entity, status == STATUS_DISABLED).then(() =>
