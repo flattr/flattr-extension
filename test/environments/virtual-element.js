@@ -3,7 +3,6 @@
 const fs = require("fs");
 const requireInject = require("require-inject");
 const jsdom = require("jsdom");
-const chrome = require("sinon-chrome");
 
 const webcomponents = fs.readFileSync(
     require.resolve("webcomponents.js/webcomponents-lite"),
@@ -37,8 +36,7 @@ function createEnvironment()
       "../../src/lib/ui/components/virtual-element",
       {
         "global/window": window,
-        "global/document": document,
-        "../../src/lib/common/env/chrome": {chrome}
+        "global/document": document
       }
     );
 

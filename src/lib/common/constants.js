@@ -10,6 +10,8 @@ let apiDomain = ("__BUILD_TYPE__" == "release") ? "flattr.com" : "smickr.net";
  */
 exports.API_BASE_DOMAIN = apiDomain;
 
+// not using `apiDomain` here because the files subdomain is not yet hosted
+// on smickr.net
 const FILES_BASE = "https://files.flattr.com";
 exports.FILES_DOMAINS_UPDATE = `${FILES_BASE}/domains.json`;
 
