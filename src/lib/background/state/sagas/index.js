@@ -2,12 +2,14 @@
 
 const {fork} = require("redux-saga/effects");
 const {watchForFailuresAndLogError} = require("./failureLogger");
+const {watchForSaveFlattrs} = require("./saveFlattrs");
 const {watchForSubmitFlattrs} = require("./submitFlattrs");
 const {watchForNewVisits} = require("./saveVisitTimestamps");
 
 let sagas = [
   watchForFailuresAndLogError.bind(null, {}),
   watchForNewVisits,
+  watchForSaveFlattrs,
   watchForSubmitFlattrs
 ];
 

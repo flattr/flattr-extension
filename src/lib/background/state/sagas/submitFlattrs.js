@@ -12,14 +12,11 @@ const {
   SUBMIT_FLATTRS_SUCCESS,
   SUBMIT_FLATTRS_FAILURE
 } = require("../types/flattrs");
-
+const {getFlattrsToSubmit} = require("../reducers/flattrs");
 const {API_RETRY_DELAY_MS} = require("../../../common/constants");
 const {sendFlattrs} = require("../../server/api");
 
 const retryStatus = new Set([0, 408, 409, 500, 502, 503, 504, 525, 599]);
-
-const getFlattrs = (state) => (state || {}).flattrs || {};
-exports.getFlattrs = getFlattrs;
 
 function* submitFlattrs({retryDelays = API_RETRY_DELAY_MS})
 {
@@ -30,7 +27,7 @@ function* submitFlattrs({retryDelays = API_RETRY_DELAY_MS})
     // submission
     yield put({type: SUBMIT_FLATTRS_MERGE_PENDING});
 
-    const {submitting: flattrs} = yield select(getFlattrs);
+    const {submitting: flattrs} = yield select(getFlattrsToSubmit);
 
     if (flattrs.length < 1)
     {
@@ -88,7 +85,7 @@ function* watchForSubmitFlattrs()
   {
     yield take(submitFlattrsChan);
 
-    const {pending, submitting} = yield select(getFlattrs);
+    const {pending, submitting} = yield select(getFlattrsToSubmit);
 
     // it's possible that a previous handler already submit the flattrs
     if (pending.length < 1 && submitting.length < 1)

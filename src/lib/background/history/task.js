@@ -20,16 +20,16 @@ const settingName = "history.lastProcessing";
 
 function submitFlattrEntities(flattrEntities)
 {
-  return flattrEntities.map((entity) =>
+  for (let entity of flattrEntities)
   {
-    return submit({
+    submit({
       entity,
       tabId: null,
       title: entity,
       type: "visit",
       url: `http://${entity}/`
     });
-  });
+  }
 }
 
 function startProcessing(lastProcessing)

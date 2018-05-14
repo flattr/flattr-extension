@@ -36,11 +36,24 @@ const makeTestModule = ({sendFlattrs}) =>
     },
     "../../src/lib/background/server/api": {sendFlattrs}
   };
+
+  let reducerPath = "../../src/lib/background/state/reducers/flattrs";
+  const reducer = requireInject(reducerPath);
+  deps[reducerPath] = reducer;
+
   let sagaUtilsPath = "../../src/lib/background/state/sagas/utils";
   const {delay} = requireInject(sagaUtilsPath, deps);
   deps[sagaUtilsPath] = {delay};
+
   let result = requireInject(TEST_PATH, deps);
-  return Object.assign({}, result, {delay, sendFlattrs});
+  return Object.assign(
+    {},
+    result,
+    {
+      delay,
+      getFlattrsToSubmit: reducer.getFlattrsToSubmit,
+      sendFlattrs
+    });
 };
 
 const makeSagaTester = () => new SagaTester({
@@ -69,8 +82,8 @@ describe(`Test ${TEST_PATH}`, () =>
       let expectedActions = [action];
       saga.dispatch(action);
       let state = saga.getState();
-      assert.deepEqual(state.flattrs.pending, flattrsOne);
-      assert.deepEqual(state.flattrs.submitting, []);
+      assert.deepEqual(state.flattrs.submit.pending, flattrsOne);
+      assert.deepEqual(state.flattrs.submit.submitting, []);
 
       action = {type: SUBMIT_FLATTRS, flattrs: flattrsTwo};
       expectedActions.push(action);
@@ -86,15 +99,15 @@ describe(`Test ${TEST_PATH}`, () =>
       }
 
       state = saga.getState();
-      assert.deepEqual(state.flattrs.pending, flattrsCombined);
-      assert.deepEqual(state.flattrs.submitting, []);
+      assert.deepEqual(state.flattrs.submit.pending, flattrsCombined);
+      assert.deepEqual(state.flattrs.submit.submitting, []);
 
       yield saga.waitFor(SUBMIT_FLATTRS_SUCCESS, true);
 
       saga.dispatch({type: SUBMIT_FLATTRS, flattrs: flattrsOne});
       state = saga.getState();
-      assert.deepEqual(state.flattrs.pending, flattrsOne);
-      assert.deepEqual(state.flattrs.submitting, []);
+      assert.deepEqual(state.flattrs.submit.pending, flattrsOne);
+      assert.deepEqual(state.flattrs.submit.submitting, []);
 
       yield saga.waitFor(SUBMIT_FLATTRS_SUCCESS, true);
 
@@ -120,13 +133,13 @@ describe(`Test ${TEST_PATH}`, () =>
 
     saga.dispatch({type: SUBMIT_FLATTRS});
     let state = saga.getState();
-    assert.deepEqual(state.flattrs.pending, []);
-    assert.deepEqual(state.flattrs.submitting, []);
+    assert.deepEqual(state.flattrs.submit.pending, []);
+    assert.deepEqual(state.flattrs.submit.submitting, []);
 
     saga.dispatch({type: SUBMIT_FLATTRS, flattrs});
     state = saga.getState();
-    assert.deepEqual(state.flattrs.pending, flattrs);
-    assert.deepEqual(state.flattrs.submitting, []);
+    assert.deepEqual(state.flattrs.submit.pending, flattrs);
+    assert.deepEqual(state.flattrs.submit.submitting, []);
 
     task.cancel();
   });
@@ -151,7 +164,7 @@ describe(`Test ${TEST_PATH}`, () =>
     {
       // Dispatch the event to start the saga
       saga.dispatch({type: SUBMIT_FLATTRS, flattrs});
-      assert.deepEqual(saga.getState().flattrs.pending, flattrs);
+      assert.deepEqual(saga.getState().flattrs.submit.pending, flattrs);
 
       assert.equal(sendFlattrsCount, 0);
 
@@ -159,8 +172,8 @@ describe(`Test ${TEST_PATH}`, () =>
 
       assert.equal(sendFlattrsCount, 1);
 
-      assert.deepEqual(saga.getState().flattrs.submitting, flattrs);
-      assert.deepEqual(saga.getState().flattrs.pending, []);
+      assert.deepEqual(saga.getState().flattrs.submit.submitting, flattrs);
+      assert.deepEqual(saga.getState().flattrs.submit.pending, []);
 
       yield saga.waitFor(SUBMIT_FLATTRS_SUCCESS);
 
@@ -196,12 +209,12 @@ describe(`Test ${TEST_PATH}`, () =>
     {
       // Dispatch the event to start the saga
       saga.dispatch({type: SUBMIT_FLATTRS, flattrs});
-      assert.deepEqual(saga.getState().flattrs.pending, flattrs);
+      assert.deepEqual(saga.getState().flattrs.submit.pending, flattrs);
 
       yield saga.waitFor(SUBMIT_FLATTRS_MERGE_PENDING);
 
-      assert.deepEqual(saga.getState().flattrs.submitting, flattrs);
-      assert.deepEqual(saga.getState().flattrs.pending, []);
+      assert.deepEqual(saga.getState().flattrs.submit.submitting, flattrs);
+      assert.deepEqual(saga.getState().flattrs.submit.pending, []);
 
       yield saga.waitFor(SUBMIT_FLATTRS_FAILURE);
 
@@ -245,12 +258,12 @@ describe(`Test ${TEST_PATH}`, () =>
     {
       // Dispatch the event to start the saga
       saga.dispatch({type: SUBMIT_FLATTRS, flattrs});
-      assert.deepEqual(saga.getState().flattrs.pending, flattrs);
+      assert.deepEqual(saga.getState().flattrs.submit.pending, flattrs);
 
       yield saga.waitFor(SUBMIT_FLATTRS_MERGE_PENDING);
 
-      assert.deepEqual(saga.getState().flattrs.pending, []);
-      assert.deepEqual(saga.getState().flattrs.submitting, flattrs);
+      assert.deepEqual(saga.getState().flattrs.submit.pending, []);
+      assert.deepEqual(saga.getState().flattrs.submit.submitting, flattrs);
 
       yield saga.waitFor(SUBMIT_FLATTRS_FAILURE);
 
@@ -273,7 +286,7 @@ describe(`Test ${TEST_PATH}`, () =>
   it("watchForSubmitFlattrs with pending flattrs", () =>
   {
     const {
-      delay, getFlattrs, submitFlattrs, watchForSubmitFlattrs
+      delay, getFlattrsToSubmit, submitFlattrs, watchForSubmitFlattrs
     } = makeTestModule({});
     let gen = watchForSubmitFlattrs();
 
@@ -288,7 +301,7 @@ describe(`Test ${TEST_PATH}`, () =>
 
     assert.deepEqual(gen.next(mockChannel).value, take(mockChannel));
 
-    assert.deepEqual(gen.next().value, select(getFlattrs));
+    assert.deepEqual(gen.next().value, select(getFlattrsToSubmit));
 
     assert.deepEqual(
         gen.next({submitting: [], pending: [{url: "foo"}]}).value,
@@ -306,7 +319,9 @@ describe(`Test ${TEST_PATH}`, () =>
 
   it("watchForSubmitFlattrs with interruption", () =>
   {
-    const {delay, getFlattrs, watchForSubmitFlattrs} = makeTestModule({});
+    const {
+      delay, getFlattrsToSubmit, watchForSubmitFlattrs
+    } = makeTestModule({});
     let gen = watchForSubmitFlattrs();
 
     assert.deepEqual(gen.next().value, call(buffers.dropping, 1));
@@ -320,7 +335,7 @@ describe(`Test ${TEST_PATH}`, () =>
 
     assert.deepEqual(gen.next(mockChannel).value, take(mockChannel));
 
-    assert.deepEqual(gen.next().value, select(getFlattrs));
+    assert.deepEqual(gen.next().value, select(getFlattrsToSubmit));
 
     assert.deepEqual(
         gen.next({submitting: [], pending: [{url: "foo"}]}).value,
@@ -334,7 +349,7 @@ describe(`Test ${TEST_PATH}`, () =>
 
   it("watchForSubmitFlattrs without pending flattrs", () =>
   {
-    const {getFlattrs, watchForSubmitFlattrs} = makeTestModule({});
+    const {getFlattrsToSubmit, watchForSubmitFlattrs} = makeTestModule({});
     let gen = watchForSubmitFlattrs();
 
     assert.deepEqual(gen.next().value, call(buffers.dropping, 1));
@@ -348,7 +363,7 @@ describe(`Test ${TEST_PATH}`, () =>
 
     assert.deepEqual(gen.next(mockChannel).value, take(mockChannel));
 
-    assert.deepEqual(gen.next().value, select(getFlattrs));
+    assert.deepEqual(gen.next().value, select(getFlattrsToSubmit));
 
     assert.deepEqual(
         gen.next({submitting: [], pending: []}).value,
@@ -359,7 +374,7 @@ describe(`Test ${TEST_PATH}`, () =>
 
   it("submitFlattrs with pending flattrs and no errors", () =>
   {
-    const {getFlattrs, sendFlattrs, submitFlattrs} = makeTestModule({});
+    const {getFlattrsToSubmit, sendFlattrs, submitFlattrs} = makeTestModule({});
     let gen = submitFlattrs({});
     let flattrs = [{url: "bar"}];
 
@@ -367,7 +382,7 @@ describe(`Test ${TEST_PATH}`, () =>
         gen.next().value,
         put({type: SUBMIT_FLATTRS_MERGE_PENDING}));
 
-    assert.deepEqual(gen.next().value, select(getFlattrs));
+    assert.deepEqual(gen.next().value, select(getFlattrsToSubmit));
 
     assert.deepEqual(
         gen.next({submitting: flattrs}).value,
@@ -382,7 +397,7 @@ describe(`Test ${TEST_PATH}`, () =>
 
   it("submitFlattrs without pending flattrs", () =>
   {
-    const {getFlattrs, submitFlattrs} = makeTestModule({});
+    const {getFlattrsToSubmit, submitFlattrs} = makeTestModule({});
     let gen = submitFlattrs({});
     let flattrs = [];
 
@@ -390,14 +405,16 @@ describe(`Test ${TEST_PATH}`, () =>
         gen.next().value,
         put({type: SUBMIT_FLATTRS_MERGE_PENDING}));
 
-    assert.deepEqual(gen.next().value, select(getFlattrs));
+    assert.deepEqual(gen.next().value, select(getFlattrsToSubmit));
 
     assert.deepEqual(gen.next({submitting: flattrs}).done, true);
   });
 
   it("submitFlattrs with pending flattrs and retry status 500", () =>
   {
-    const {delay, getFlattrs, sendFlattrs, submitFlattrs} = makeTestModule({});
+    const {
+      delay, getFlattrsToSubmit, sendFlattrs, submitFlattrs
+    } = makeTestModule({});
     let gen = submitFlattrs({});
     let flattrs = [{url: "bar"}];
 
@@ -408,7 +425,7 @@ describe(`Test ${TEST_PATH}`, () =>
           gen.next((tryCount === 0) ? undefined : RETRY).value,
           put({type: SUBMIT_FLATTRS_MERGE_PENDING}));
 
-      assert.deepEqual(gen.next().value, select(getFlattrs));
+      assert.deepEqual(gen.next().value, select(getFlattrsToSubmit));
 
       assert.deepEqual(
           gen.next({submitting: flattrs}).value,
@@ -440,7 +457,7 @@ describe(`Test ${TEST_PATH}`, () =>
 
   it("submitFlattrs with pending flattrs and retry status 403", () =>
   {
-    const {getFlattrs, sendFlattrs, submitFlattrs} = makeTestModule({});
+    const {getFlattrsToSubmit, sendFlattrs, submitFlattrs} = makeTestModule({});
     let gen = submitFlattrs({});
     let flattrs = [{url: "bar"}];
 
@@ -448,7 +465,7 @@ describe(`Test ${TEST_PATH}`, () =>
         gen.next().value,
         put({type: SUBMIT_FLATTRS_MERGE_PENDING}));
 
-    assert.deepEqual(gen.next().value, select(getFlattrs));
+    assert.deepEqual(gen.next().value, select(getFlattrsToSubmit));
 
     assert.deepEqual(
         gen.next({submitting: flattrs}).value,

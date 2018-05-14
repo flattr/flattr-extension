@@ -1,6 +1,9 @@
 "use strict";
 
 const {
+  SAVE_FLATTRS,
+  SAVE_FLATTRS_MERGE_PENDING,
+  SAVE_FLATTRS_SUCCESS,
   SUBMIT_FLATTRS,
   SUBMIT_FLATTRS_MERGE_PENDING,
   SUBMIT_FLATTRS_SUCCESS,
@@ -10,36 +13,67 @@ const {
 const {filterFlattrsForURLs} = require("../filters/flattrs");
 
 const getFlattrsInitialState = () => ({
-  submitting: [], pending: []
+  save: {saving: [], pending: []},
+  submit: {submitting: [], pending: []}
 });
+
+let validFlattrs = (action) => (
+    Array.isArray(action.flattrs) && action.flattrs.length > 0);
 
 const flattrsReducer = (state = getFlattrsInitialState(), action) =>
 {
-  let {submitting, pending} = state;
-  let diff = {};
+  let newState = {};
+  newState.save = Object.assign({}, state.save);
+  newState.submit = Object.assign({}, state.submit);
 
   switch (action.type)
   {
-    case SUBMIT_FLATTRS_MERGE_PENDING:
-      diff = {pending: [], submitting: submitting.concat(pending)};
-      break;
-    case SUBMIT_FLATTRS:
-      if (!Array.isArray(action.flattrs) || action.flattrs.length < 1)
+    case SAVE_FLATTRS:
+      if (!validFlattrs(action))
       {
         break;
       }
-      diff.pending = pending.concat(filterFlattrsForURLs(action.flattrs));
+      newState.save.pending = state.save.pending.concat(action.flattrs);
+      break;
+    case SAVE_FLATTRS_MERGE_PENDING:
+      newState.save.pending = [];
+      newState.save.saving = state.save.saving.concat(state.save.pending);
+      break;
+    case SAVE_FLATTRS_SUCCESS:
+      newState.save.saving = [];
+      break;
+    case SUBMIT_FLATTRS:
+      if (!validFlattrs(action))
+      {
+        break;
+      }
+      newState.submit.pending =
+          state.submit.pending.concat(filterFlattrsForURLs(action.flattrs));
+      break;
+    case SUBMIT_FLATTRS_MERGE_PENDING:
+      newState.submit.pending = [];
+      newState.submit.submitting =
+          state.submit.submitting.concat(state.submit.pending);
       break;
     case SUBMIT_FLATTRS_FAILURE:
       // we gave up trying to send flattrs to server, so stick the failed
       // flattrs back in to the pending queue for the next event
-      diff.pending = pending.concat(submitting);
+      newState.submit.pending =
+          state.submit.pending.concat(state.submit.submitting);
       // fall through
     case SUBMIT_FLATTRS_SUCCESS:
-      diff.submitting = [];
+      newState.submit.submitting = [];
       break;
   }
 
-  return Object.assign({}, state, diff);
+  return newState;
 };
 exports.flattrs = flattrsReducer;
+
+const getFlattrs = (state) => ((state || {}).flattrs || {});
+
+const getFlattrsToSave = (state) => (getFlattrs(state).save || {});
+exports.getFlattrsToSave = getFlattrsToSave;
+
+const getFlattrsToSubmit = (state) => (getFlattrs(state).submit || {});
+exports.getFlattrsToSubmit = getFlattrsToSubmit;
