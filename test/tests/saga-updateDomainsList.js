@@ -344,7 +344,7 @@ describe(`Test ${TEST_PATH}`, () =>
   it("domains list update alarm triggers immediately to start", () =>
   {
     const {
-      delay, runUpdateDomains, settings, watchForDomainUpdateAlarm
+      runUpdateDomains, settings, watchForDomainUpdateAlarm
     } = makeTestModule({});
     let gen = watchForDomainUpdateAlarm();
 
@@ -352,11 +352,7 @@ describe(`Test ${TEST_PATH}`, () =>
         gen.next().value,
         call(settings.get, "domains.lastUpdated", 0));
 
-    assert.deepEqual(gen.next(0).value, call(delay, 0));
-
     assert.deepEqual(gen.next().value, call(runUpdateDomains));
-
-    assert.deepEqual(gen.next().value, call(MockDate.now));
   });
 
   it("domains list update alarm waits proper amount of time", () =>
@@ -378,7 +374,5 @@ describe(`Test ${TEST_PATH}`, () =>
         call(delay, DOMAIN_LIST_UPDATE_INTERVAL));
 
     assert.deepEqual(gen.next().value, call(runUpdateDomains));
-
-    assert.deepEqual(gen.next().value, call(MockDate.now));
   });
 });

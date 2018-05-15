@@ -90,14 +90,16 @@ function* watchForDomainUpdateAlarm()
 
   while (true)
   {
-    yield call(
-      delay,
-      Math.max(0, ((lastUpdated + DOMAIN_LIST_UPDATE_INTERVAL) - Date.now()))
-    );
+    let intervalDelay =
+        (lastUpdated + DOMAIN_LIST_UPDATE_INTERVAL) - Date.now();
+    if (intervalDelay > 0)
+    {
+      yield call(delay, intervalDelay);
+    }
 
     yield call(runUpdateDomains);
 
-    lastUpdated = yield call(Date.now);
+    lastUpdated = Date.now();
   }
 }
 exports.watchForDomainUpdateAlarm = watchForDomainUpdateAlarm;
