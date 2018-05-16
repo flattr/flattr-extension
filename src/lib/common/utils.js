@@ -7,7 +7,11 @@ const {chrome} = require("./env/chrome");
 
 exports.createURLFromData = (data) =>
 {
-  let blob = new Blob([JSON.stringify(data)], {type: "application/json"});
+  let blob = new Blob(
+    [JSON.stringify(data, undefined, 2)],
+    {
+      type: "application/json"
+    });
   return URL.createObjectURL(blob);
 };
 
