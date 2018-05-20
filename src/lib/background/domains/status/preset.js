@@ -6,7 +6,59 @@ const {
   STATUS_BLOCKED,
   STATUS_UNDEFINED
 } = require("../../../common/constants");
-const presets = require("../../../../data/domains");
+const settings = require("../../../common/settings");
+const db = require("../../database/json");
+
+const PRESETS = require("../../../../data/domains");
+
+let presets;
+let authorDomains;
+let videoDomains;
+
+function setPresets(domains)
+{
+  presets = domains;
+  authorDomains = new Set(domains.author);
+  videoDomains = new Set(domains.video);
+}
+
+setPresets(PRESETS);
+
+function refreshPresets()
+{
+  db.get("domains").then(({domains}) =>
+  {
+    if (!domains)
+    {
+      return;
+    }
+
+    setPresets(domains);
+  });
+}
+exports.refreshPresets = refreshPresets;
+
+// load any existing updates
+settings.get("domains.lastUpdated", 0)
+  .then((lastUpdated) =>
+  {
+    if (lastUpdated > 0)
+    {
+      refreshPresets();
+    }
+  });
+
+function isAuthorDomain(domain)
+{
+  return authorDomains.has(domain);
+}
+exports.isAuthorDomain = isAuthorDomain;
+
+function hasVideos(domain)
+{
+  return videoDomains.has(domain);
+}
+exports.hasVideos = hasVideos;
 
 /**
  * Retrieve only tree nodes which are relevant to the given host

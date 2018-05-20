@@ -18,6 +18,8 @@ describe("Test domain checks", () =>
     ["disabled-user.com", true]
   ]);
 
+  let lastUpdated = 0;
+
   const domains = requireInject("../../src/lib/background/domains", {
     "localforage":
     {
@@ -70,6 +72,33 @@ describe("Test domain checks", () =>
           throw new Error();
 
         return url;
+      }
+    },
+    "../../src/lib/common/env/chrome":
+    {
+      chrome:
+      {
+        runtime: {},
+        storage:
+        {
+          local:
+          {
+            get(name, callback)
+            {
+              if (name == "domains.lastUpdated")
+                return callback({"domains.lastUpdated": lastUpdated});
+              callback({});
+            },
+            set(settings, callback)
+            {
+              if (settings["domains.lastUpdated"])
+              {
+                lastUpdated = settings["domains.lastUpdated"];
+                callback();
+              }
+            }
+          }
+        }
       }
     }
   });

@@ -7,6 +7,7 @@ const {spawn} = require("../utils");
 
 const {Window} = require("../mocks/window");
 const {localforage} = require("../mocks/localforage");
+const chrome = require("sinon-chrome");
 
 const constants = require("../../src/lib/common/constants");
 const {STATUS_ENABLED} = constants;
@@ -194,7 +195,7 @@ function run({
     localforage,
     "../../src/lib/background/database/events": {db: eventsDb},
     "../../src/lib/background/database/session": {db: sessionDb},
-    "../../src/lib/common/env/chrome": {},
+    "../../src/lib/common/env/chrome": {chrome},
     "global/window": win,
     "../../src/lib/common/account": {
       isActive: () => Promise.resolve(true)

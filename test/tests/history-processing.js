@@ -2,6 +2,7 @@
 
 const requireInject = require("require-inject");
 const chrome = require("sinon-chrome");
+const sinon = require("sinon");
 
 const {HISTORY_CONDITIONS} = require("../../src/lib/common/constants");
 const {Window} = require("../mocks/window");
@@ -78,7 +79,16 @@ function expectShort()
 
 describe("Test history processing", () =>
 {
-  beforeEach(() => db.visits.clear());
+  beforeEach(() =>
+  {
+    db.visits.clear();
+    chrome.storage.local.get.withArgs(
+      "domains.lastUpdated",
+      sinon.match.func
+    ).yields({
+      "domains.lastUpdated": Date.now()
+    });
+  });
   afterEach(() => chrome.flush());
   after(() => db.delete());
 

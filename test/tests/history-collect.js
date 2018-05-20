@@ -2,6 +2,7 @@
 
 const requireInject = require("require-inject");
 const chrome = require("sinon-chrome");
+const sinon = require("sinon");
 
 const {Window} = require("../mocks/window");
 const {expect} = require("../assert");
@@ -66,39 +67,68 @@ function triggerVisit(visits, expected, options = {})
         HISTORY_MAX_VISIT_DEVIATION: maxDeviation,
         STATUS_BLOCKED,
         STATUS_DISABLED
-      }
+      },
+      "../../src/lib/common/env/chrome": {chrome}
     };
 
     let events = requireInject("../../src/lib/common/events", deps);
     deps["../../src/lib/common/events"] = events;
+
+    const {watchForFailuresAndLogError} = requireInject(
+        "../../src/lib/background/state/sagas/failureLogger",
+        deps);
+
+    deps["../../src/lib/background/state/sagas/failureLogger"] = {
+      watchForFailuresAndLogError
+    };
+
+    const {watchForNewVisits} = requireInject(
+        "../../src/lib/background/state/sagas/saveVisitTimestamps",
+        deps);
+
+    deps["../../src/lib/background/state/sagas/saveVisitTimestamps"] = {
+      watchForNewVisits
+    };
+
+    deps["../../src/lib/background/state/sagas/index"] = {
+      sagas: [
+        watchForFailuresAndLogError.bind(null, {}),
+        watchForNewVisits
+      ]
+    };
+
+    let waitForPendingVisitsToSave = undefined;
+
+    chrome.storage.local.get.withArgs(
+      "domains.lastUpdated",
+      sinon.match.func
+    ).yields({
+      "domains.lastUpdated": Date.now()
+    });
+
+    chrome.history.onVisited.addListener = (listener) =>
+    {
+      // trigger desired visits
+      let promises = visits.map(listener);
+
+      // wait for listeners to complete
+      Promise.all(promises)
+        .then(waitForPendingVisitsToSave)
+        .then(() => db.visits.toArray())
+        .then((storedVisits) =>
+        {
+          expect(storedVisits).to.deep.equal(expected);
+        })
+        .then(resolve)
+        .catch(reject);
+    };
 
     let state = requireInject("../../src/lib/background/state", deps);
     deps["../../src/lib/background/state"] = state;
 
     let utils = requireInject("../../src/lib/background/history/utils", deps);
     deps["../../src/lib/background/history/utils"] = utils;
-
-    deps["../../src/lib/common/env/chrome"] = {
-      chrome: {
-        history: {
-          onVisited: {
-            addListener(listener)
-            {
-              let promises = visits.map(listener);
-              Promise.all(promises)
-                .then(utils.waitForPendingVisitsToSave)
-                .then(() => db.visits.toArray())
-                .then((storedVisits) =>
-                {
-                  expect(storedVisits).to.deep.equal(expected);
-                })
-                .then(resolve)
-                .catch(reject);
-            }
-          }
-        }
-      }
-    };
+    ({waitForPendingVisitsToSave} = utils);
 
     requireInject("../../src/lib/background/history/collect", deps);
   });

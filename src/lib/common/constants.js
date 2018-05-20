@@ -10,6 +10,9 @@ let apiDomain = ("__BUILD_TYPE__" == "release") ? "flattr.com" : "smickr.net";
  */
 exports.API_BASE_DOMAIN = apiDomain;
 
+const FILES_BASE = `https://files.${apiDomain}`;
+exports.FILES_DOMAINS_UPDATE = `${FILES_BASE}/domains.json`;
+
 /**
  * Base URL of API endpoints
  * @type {string}
@@ -91,5 +94,7 @@ exports.HISTORY_CONDITIONS = [
 exports.HISTORY_MAX_VISIT_DEVIATION = 3600000; // 01h:00m:00s
 exports.HISTORY_PROCESSING_DELAY = 300000; // 00h:05m:00s
 exports.HISTORY_PROCESSING_INTERVAL = DAY_MS;
+
+exports.DOMAIN_LIST_UPDATE_INTERVAL = DAY_MS;
 
 exports.ALARM_INTERVAL_MS = 1800000; // 00h:30m:00s

@@ -1,18 +1,24 @@
 "use strict";
 
-const {fork} = require("redux-saga/effects");
 const {watchForFailuresAndLogError} = require("./failureLogger");
 const {watchForSubmitFlattrs} = require("./submitFlattrs");
 const {watchForNewVisits} = require("./saveVisitTimestamps");
+const {
+  watchForDomainUpdateAlarm,
+  watchForDomainUpdateStart
+} = require("./updateDomainsList");
 
-let sagas = [
-  watchForFailuresAndLogError.bind(null, {}),
-  watchForNewVisits,
-  watchForSubmitFlattrs
-];
+let sagas = [];
 
-function* mainSaga()
+if (typeof global.chrome !== "undefined")
 {
-  yield sagas.map((saga) => fork(saga));
+  sagas = [
+    watchForFailuresAndLogError.bind(null, {}),
+    watchForDomainUpdateAlarm,
+    watchForDomainUpdateStart,
+    watchForNewVisits,
+    watchForSubmitFlattrs
+  ];
 }
-exports.mainSaga = mainSaga;
+
+exports.sagas = sagas;
