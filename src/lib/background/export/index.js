@@ -15,14 +15,14 @@ function exportExtensionData()
   ])
   .then(([
     browsingEvents,
-    flattrsPending,
+    flattrs,
     userDomainsSettings,
     userExtensionSettings
   ]) =>
   {
     return {
       browsingEvents,
-      flattrsPending,
+      flattrs,
       userDomainsSettings,
       userExtensionSettings
     };
