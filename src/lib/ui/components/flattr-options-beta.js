@@ -26,50 +26,47 @@ class OptionsSectionBeta extends VirtualElement
     let exporter = null;
     let footnotes = null;
 
-    if (betaEnabled)
+    if (this._export)
     {
-      if (this._export)
+      if (this._export.url)
       {
-        if (this._export.url)
-        {
-          exporter = h(
-            "a",
-            {
-              download: `export-${Date.now()}.json`,
-              href: this._export.url,
-              target: "_blank"
-            },
-            h("button", i18n.get("options_beta_export_download"))
-          );
-        }
-        else
-        {
-          exporter = i18n.get("options_beta_export_loading");
-        }
+        exporter = h(
+          "a",
+          {
+            download: `export-${Date.now()}.json`,
+            href: this._export.url,
+            target: "_blank"
+          },
+          h("button", i18n.get("options_beta_export_download"))
+        );
       }
       else
       {
-        exporter = h("a", {
-          href: "#",
-          onclick(ev)
-          {
-            ev.preventDefault();
-
-            that._export = Object.create(null);
-            that.render();
-
-            ipc.send("export", {dateRange: 30, skipSubstitution: true})
-              .then((url) =>
-              {
-                that._export.url = url;
-                that.render();
-              });
-          }
-        }, i18n.get("options_beta_export_start"));
+        exporter = i18n.get("options_beta_export_loading");
       }
-
-      footnotes = h("em", i18n.get("options_beta_export_footnote"));
     }
+    else
+    {
+      exporter = h("a", {
+        href: "#",
+        onclick(ev)
+        {
+          ev.preventDefault();
+
+          that._export = Object.create(null);
+          that.render();
+
+          ipc.send("export")
+            .then((url) =>
+            {
+              that._export.url = url;
+              that.render();
+            });
+        }
+      }, i18n.get("options_beta_export_start"));
+    }
+
+    footnotes = h("em", i18n.get("options_beta_export_footnote"));
 
     return [
       h("h3", i18n.get("options_beta_title")),

@@ -14,7 +14,6 @@ const {IDLE_INTERVAL} = require("../common/constants");
 const {on} = require("../common/events");
 const settings = require("../common/settings");
 require("./stats");
-const {collect} = require("./stats/collector");
 const {record} = require("./stats/record");
 const {createURLFromData, getCurrentWindowId, normalizeURL} =
     require("../common/utils");
@@ -169,7 +168,9 @@ function onMessage({type, action, data}, {tab}, sendResponse)
   {
     case "export":
       hasResponse = true;
-      result = collect(data).then(createURLFromData);
+      result = require("./export")
+          .exportExtensionData()
+          .then(createURLFromData);
       break;
   }
 
