@@ -1,6 +1,6 @@
 {
   "name": "flattr-extension",
-  "private": true,
+  "version": "0.6.0",
   "scripts": {
     "build": "gulp build",
     "bundle": "gulp bundle",
