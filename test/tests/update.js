@@ -3,45 +3,9 @@
 const requireInject = require("require-inject");
 
 const {expect} = require("../assert");
-const {spawn} = require("../utils");
 
 const {indexedDB} = require("../mocks/indexeddb");
 const {removeAllDatabases} = require("../mocks/dexie");
-
-const DB_FLATTR = "flattr";
-const DB_BLOCKED = "blocked";
-
-function makeDatabase(name)
-{
-  return new Promise((resolve, reject) =>
-  {
-    let request = indexedDB.open(name, 1);
-    request.onerror = (e) => reject(e);
-    request.onsuccess = (e) => resolve(e.target.result);
-  });
-}
-
-function makeDatabases()
-{
-  return spawn(function*()
-  {
-    let flattrsDB = yield makeDatabase(DB_FLATTR);
-    let blockedDB = yield makeDatabase(DB_BLOCKED);
-    return {flattrsDB, blockedDB};
-  });
-}
-
-function dbExists(name)
-{
-  return new Promise((resolve, reject) =>
-  {
-    let request = indexedDB.open(name);
-    let exists = true;
-    request.onerror = (e) => reject(e);
-    request.onsuccess = (e) => resolve(exists);
-    request.onupgradeneeded = () => exists = false;
-  });
-}
 
 describe("Test lib/background/update", () =>
 {
@@ -61,52 +25,25 @@ describe("Test lib/background/update", () =>
 
   it("old indexedDB databases are removed when they exist", () =>
   {
-    return spawn(function*()
-    {
-      let flattrDbExists = yield dbExists(DB_FLATTR);
-      expect(flattrDbExists).to.be.equal(false);
+    let dbs = new Set(["blocked", "flattr"]);
 
-      let blockedDbExists = yield dbExists(DB_BLOCKED);
-      expect(blockedDbExists).to.be.equal(false);
-
-      yield makeDatabases();
-
-      flattrDbExists = yield dbExists(DB_FLATTR);
-      expect(flattrDbExists).to.be.equal(true);
-
-      blockedDbExists = yield dbExists(DB_BLOCKED);
-      expect(blockedDbExists).to.be.equal(true);
-
-      let promises = [];
-      let deleteDatabase = (...args) =>
-      {
-        promises.push(new Promise((resolve, reject) =>
-        {
-          let result = indexedDB.deleteDatabase(...args);
-          result.onerror = reject;
-          result.onsuccess = resolve;
-        }));
-      };
-
-      requireInject("../../src/lib/background/update", {
-        "global/window": {
-          indexedDB: {deleteDatabase},
-          localStorage: {}
+    requireInject("../../src/lib/background/update", {
+      "global/window": {
+        indexedDB: {
+          deleteDatabase(name)
+          {
+            dbs.delete(name);
+          }
         },
-        "../../src/lib/common/settings": {
-          get() {},
-          getSync() {}
-        }
-      });
-
-      yield Promise.all(promises);
-
-      flattrDbExists = yield dbExists(DB_FLATTR);
-      expect(flattrDbExists).to.be.equal(false);
-
-      blockedDbExists = yield dbExists(DB_BLOCKED);
-      expect(blockedDbExists).to.be.equal(false);
+        localStorage: {}
+      },
+      "../../src/lib/common/settings": {
+        get() {},
+        getSync() {}
+      }
     });
+
+    expect(dbs.size).equal(0);
   });
 
   it("Should migrate account data", () =>
