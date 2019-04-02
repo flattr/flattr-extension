@@ -220,7 +220,7 @@ chrome.webRequest.onHeadersReceived.addListener(
 
     record(tabId, "page-loaded", statusCode);
   },
-  {urls: ["http://*/*", "https://*/*"]}
+  {urls: ["http://*/*", "https://*/*", "dat://*/*"]}
 );
 
 on("authentication-changed", (isAuthenticated) =>
