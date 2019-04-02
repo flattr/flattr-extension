@@ -63,25 +63,32 @@ function normalizeURL(url)
 
   url.password = "";
   url.username = "";
-  url.hash = "";
 
   // We're only interested in YouTube's "v" parameter at this point
   // so we can get rid of the other query string parameters
   let params = url.search;
   url.search = "";
-  if (url.hostname == "www.youtube.com" && url.pathname == "/watch")
+  if (url.hostname == "www.youtube.com")
   {
-    params = params.substr(1).split("&");
-    for (let param of params)
+    if (url.pathname == "/watch")
     {
-      let [key] = param.split("=", 1);
-      if (key == "v")
+      params = params.substr(1).split("&");
+      for (let param of params)
       {
-        url.search = param;
-        break;
+        let [key] = param.split("=", 1);
+        if (key == "v")
+        {
+          url.search = param;
+          break;
+        }
       }
+    } else if (url.pathname == "/tv") {
+      url.pathname = "/watch";
+      url.search = RegExp(/\?v=[a-zA-Z0-9\-_]+/).exec(test.hash);
     }
   }
+
+  url.hash = "";
 
   return url.toString();
 }
