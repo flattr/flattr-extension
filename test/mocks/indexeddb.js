@@ -2,4 +2,4 @@
 
 const setGlobalVars = require("indexeddbshim");
 
-setGlobalVars(module.exports, {sqlBusyTimeout: 100});
+setGlobalVars(module.exports, {checkOrigin: false, sqlBusyTimeout: 100});
