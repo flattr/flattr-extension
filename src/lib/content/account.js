@@ -53,7 +53,7 @@ function onSubscriptionChanged(ev)
   ipc.send("account-subscription-changed", ev.detail.subscription);
 }
 
-if (location.host == API_BASE_DOMAIN)
+if (location.host === API_BASE_DOMAIN)
 {
   // We may not be allowed to access window.sessionStorage
   // if the user blocks cookies (see #861)
