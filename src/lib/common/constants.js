@@ -1,14 +1,8 @@
 "use strict";
 
-let apiDomain = 'flattr.com'
-let apiProtocol = 'https'
-if ("__BUILD_TYPE__" === 'staging') {
-  apiDomain = 'smickr.net'
-}
-if ("__BUILD_TYPE__" === 'development') {
-  apiDomain = 'flattr.test'
-  apiProtocol = 'http'
-}
+/* eslint-disable no-constant-condition */
+let apiDomain = ("__BUILD_TYPE__" == "release") ? "flattr.com" : "smickr.net";
+/* eslint-enable no-constant-condition */
 
 /**
  * Base domain of endpoints and of pages on which to listen for external events
@@ -16,20 +10,20 @@ if ("__BUILD_TYPE__" === 'development') {
  */
 exports.API_BASE_DOMAIN = apiDomain;
 
-const FILES_BASE = `${apiProtocol}://files.${apiDomain}`;
+const FILES_BASE = `https://files.${apiDomain}`;
 exports.FILES_DOMAINS_UPDATE = `${FILES_BASE}/domains.json`;
 
 /**
  * Base URL of API endpoints
  * @type {string}
  */
-exports.API_BASE = `${apiProtocol}://api.${apiDomain}`;
+exports.API_BASE = `https://api.${apiDomain}`;
 
 /**
  * Base URL of pages on which to listen for external events
  * @type {string}
  */
-const API_BASE_WEB = `${apiProtocol}://${apiDomain}`;
+const API_BASE_WEB = `https://${apiDomain}`;
 exports.API_BASE_WEB = API_BASE_WEB;
 
 /**
