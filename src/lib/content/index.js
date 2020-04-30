@@ -5,7 +5,7 @@
 "use strict";
 
 const {location} = require("global/window");
-
+const {API_BASE_DOMAIN} = require('../common/constants')
 const {chrome} = require("../common/env/chrome");
 const {normalizeURL} = require("../common/utils");
 
@@ -25,7 +25,7 @@ if (!chrome.extension.inIncognitoContext)
   }
 
   // Prevent our content scripts from running on invalid URLs
-  if (url)
+  if (url || location.host === API_BASE_DOMAIN)
   {
     require("./account");
     require("./api");
