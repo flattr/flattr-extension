@@ -7,13 +7,13 @@
 const browserify = require("browserify");
 const {exec} = require("child_process");
 const del = require("del");
+const factorVinylify = require("factor-vinylify");
 const gulp = require("gulp");
 const jeditor = require("gulp-json-editor");
 const sourcemaps = require("gulp-sourcemaps");
 const zip = require("gulp-zip");
 const path = require("path");
 const buffer = require("vinyl-buffer");
-const source = require("vinyl-source-stream");
 
 const packageJSON = require("../package.json");
 const manifest = require("../src/manifest.json");
@@ -109,35 +109,35 @@ function makeSourceMap(input)
 }
 
 /**
- * Creates bundle for specified file
- * @param {string} src - file path
+ * Creates bundles for specified files
+ * @param {string[]} filepaths - file paths
  * @param {BuildInfo} buildInfo
  * @param {boolean} debug - indicates whether to include debug information
  * @return {Promise}
  */
-function bundle(src, buildInfo, debug)
+function bundle(filepaths, buildInfo, debug)
 {
   return new Promise((resolve, reject) =>
   {
-    log(`Bundling ${src}`);
+    log("Bundling files");
 
-    let dest = path.join(DEVENV_DIR, src);
-    let input = path.join(SRC_DIR, src);
+    let input = filepaths.map((filepath) => path.join(SRC_DIR, filepath));
+    let inputExternal = path.join(SRC_DIR, "lib/common/env/external.js");
+    let output = filepaths.map((filepath) => path.join(DEVENV_DIR, filepath));
+    let outputCommon = "lib/common.js";
 
     let browserifyBundle = browserify({entries: input, debug});
 
     // Expose certain extension functionality to the outside
-    browserifyBundle.require(
-      "./src/lib/common/env/external.js",
-      {expose: "flattrAPI"}
-    );
+    browserifyBundle.require(inputExternal, {expose: "flattrAPI"});
 
     if (buildInfo.type !== "development")
     {
       browserifyBundle.ignore("redux-logger");
     }
 
-    let stream = browserifyBundle.transform("browserify-versionify",
+    let stream = browserifyBundle
+      .transform("browserify-versionify",
       {
         placeholder: "__BUILD_VERSION__",
         version: buildInfo.version
@@ -146,18 +146,22 @@ function bundle(src, buildInfo, debug)
         placeholder: "__BUILD_TYPE__",
         version: buildInfo.type
       })
+      .plugin(factorVinylify, {
+        basedir: DEVENV_DIR,
+        common: outputCommon,
+        outputs: output
+      })
       .bundle()
-      .pipe(source(path.basename(dest)))
       .on("error", reject);
 
     if (debug)
     {
-      log(`Generating ${src}.map`);
+      log("Generating source maps");
       stream = makeSourceMap(stream);
     }
 
     stream
-      .pipe(gulp.dest(path.dirname(dest)))
+      .pipe(gulp.dest(DEVENV_DIR))
       .on("error", reject)
       .on("end", resolve);
   });
@@ -227,10 +231,15 @@ function bundleFiles(buildInfo, debug)
       "ui/js/"
     ),
 
-    bundle("lib/content/index.js", buildInfo, debug),
-    bundle("lib/background/index.js", buildInfo, debug),
-    bundle("lib/ui/options/index.js", buildInfo, debug),
-    bundle("lib/ui/popup/index.js", buildInfo, debug)
+    bundle(
+      [
+        "lib/background/index.js",
+        "lib/content/index.js",
+        "lib/ui/options/index.js",
+        "lib/ui/popup/index.js"
+      ],
+      buildInfo, debug
+    )
   ]);
 }
 exports.bundleFiles = bundleFiles;

@@ -20,6 +20,7 @@
     "deep-freeze": "0.0.1",
     "del": "^2.2.0",
     "eslint-config-eyeo": "^2.0.0",
+    "factor-vinylify": "^3.0.4",
     "gulp": "3.9.0",
     "gulp-csslint": "^0.2.2",
     "gulp-eslint": "^4.0.0",
@@ -41,8 +42,7 @@
     "sign-addon": "^0.2.1",
     "sinon": "^1.17.4",
     "sinon-chrome": "2.1.2",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-buffer": "^1.0.0"
   },
   "dependencies": {
     "dexie": "^2.0.1",
