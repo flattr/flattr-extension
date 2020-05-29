@@ -9,10 +9,11 @@ function getAuthor()
   let author = null;
 
   // schema.org
-  let element = document.querySelector("[itemprop='author']");
+  let element = document.querySelector(
+     "[property='author' i], [itemprop='author' i]");
   if (element)
   {
-    element = element.querySelector("[itemprop='url']");
+    element = element.querySelector("[property='url' i], [itemprop='url' i]");
     if (element)
     {
       author = element.href;
