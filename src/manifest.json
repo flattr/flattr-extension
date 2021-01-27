@@ -25,7 +25,11 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": [
+        "https://*/*",
+        "http://*/*",
+        "dat://*/*"
+      ],
       "js": ["lib/content/index.js"],
       "run_at": "document_start"
     }
@@ -45,6 +49,7 @@
   "permissions": [
     "http://*/*",
     "https://*/*",
+    "dat://*/*",
     "alarms",
     "history",
     "idle",

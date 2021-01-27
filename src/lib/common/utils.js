@@ -54,6 +54,9 @@ exports.getCurrentTab = getCurrentTab;
 function normalizeURL(url)
 {
   url = new URL(url);
+  if (url.protocol == 'dat:')
+    url.protocol = 'http:'
+
   if (!/^https?:$/.test(url.protocol))
     throw new URIError("URL has invalid protocol");
 
