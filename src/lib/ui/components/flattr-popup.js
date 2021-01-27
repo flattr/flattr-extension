@@ -111,7 +111,7 @@ class FlattrPopup extends VirtualElement
               "a.icon.icon-flattr-alt",
               {
                 dataset: {click: "open"},
-                href: `${API_BASE_WEB}/signin`
+                href: `${API_BASE_WEB}/dashboard/contributor`
               },
               i18n.get("popup_footer_account")
             )
