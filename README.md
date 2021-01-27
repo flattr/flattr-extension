@@ -1,6 +1,7 @@
 # Flattr extension
 
 [![Build Status][circleci-image]][circleci-url]
+[![Known Vulnerabilities][snyk-image]][snyk-url]
 
 Monetize your content effortlessly. https://flattr.com
 
@@ -121,3 +122,6 @@ In addition, you need to set the following environment variables:
 
 [circleci-url]: https://circleci.com/gh/flattr/flattr-extension
 [circleci-image]: https://circleci.com/gh/flattr/flattr-extension.png
+
+[snyk-url]: https://snyk.io/test/github/flattr/flattr-extension
+[snyk-image]: https://snyk.io/test/github/flattr/flattr-extension/badge.svg
